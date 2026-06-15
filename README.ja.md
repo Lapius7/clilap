@@ -1,4 +1,13 @@
-[![Typing SVG](https://readme-typing-svg.demolab.com/?font=Fira+Code&size=45&pause=1000&color=4ec9b0&width=435&lines=clilap)](https://git.io/typing-svg)
+<div align="center">
+<pre>
+        __ _ _            
+  _____/ /(_) /___ _____  
+ / ___/ / / / / __ `/ __ \ 
+/ /__/ / / / / /_/ / /_/ / 
+\___/_/_/_/_/\__,_/ .___/  
+                 /_/       
+</pre>
+</div>
 
 [![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
 [![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
