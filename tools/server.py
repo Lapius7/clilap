@@ -1139,10 +1139,73 @@ def do_regex(pattern, body_bytes, qs, nc):
     if not text:
         lines = [sep(nc), cc(BC, '  正規表現パターン確認', nc), '',
                  hint(f'パターン: {pattern}', nc),
-                 hint(f'フラグ:   {flag_str or "なし"}', nc), '',
-                 cc(D, '  テスト文字列を POST で送信してください:', nc),
-                 cc(BW, f'  $ echo "Hello World" | curl -d @- clilap.org/regex/{quote(pattern)}', nc),
-                 sep(nc)]
+                 hint(f'フラグ:   {flag_str or "なし"}', nc), '']
+
+        try:
+            import rstr as _rstr
+            match_samples = []
+            for _ in range(30):
+                try:
+                    s = _rstr.xeger(pattern)
+                    if compiled.search(s) and s not in match_samples and len(s) <= 40:
+                        match_samples.append(s)
+                    if len(match_samples) >= 5:
+                        break
+                except Exception:
+                    break
+
+            # マッチ例を各種変形して非マッチを生成（1例につき複数の変形を試して最初の成功を採用）
+            _transforms = [
+                lambda s: re.sub(r'\d', 'X', s, count=1),
+                lambda s: re.sub(r'\d+', 'X', s, count=1),
+                lambda s: re.sub(r'[a-zA-Z]', '0', s, count=1),
+                lambda s: re.sub(r'\w', '!', s, count=1),
+                lambda s: s[1:] if len(s) > 1 else None,
+                lambda s: s[:-1] if len(s) > 1 else None,
+                lambda s: s + '!!',
+                lambda s: s.upper() if s != s.upper() else None,
+                lambda s: s.replace('-', '_') if '-' in s else None,
+                lambda s: re.sub(r'[^\w]', 'Z', s, count=1),
+            ]
+            nomatch_derived = []
+            for idx, s in enumerate(match_samples):
+                # 各マッチ例ごとに異なる変形から試す（偏り防止）
+                ordered = _transforms[idx % len(_transforms):] + _transforms[:idx % len(_transforms)]
+                for fn in ordered:
+                    try:
+                        broken = fn(s)
+                    except Exception:
+                        continue
+                    if broken and broken != s and not compiled.search(broken) and broken not in nomatch_derived and len(broken) <= 40:
+                        nomatch_derived.append(broken)
+                        break
+
+            _nomatch_pool = [
+                '', 'abc', '123', 'hello world', '!!!',
+                '日本語', '2024-01-01', 'test@example.com',
+                'http://example.com', 'null', 'あいうえお',
+                'xyz789', '!@#$%', '00000', 'HELLO', ' ', '\n',
+            ]
+            nomatch_from_pool = [s for s in _nomatch_pool
+                                 if not compiled.search(s) and s not in nomatch_derived]
+            nomatch_samples = (nomatch_derived + nomatch_from_pool)[:5]
+
+            if match_samples:
+                lines.append(cc(BG, f'  ✓ マッチする ({len(match_samples)}件):', nc))
+                for s in match_samples:
+                    lines.append(cc(BG, '    ✓ ', nc) + cc(C, repr(s), nc))
+                lines.append('')
+            if nomatch_samples:
+                lines.append(cc(BR, f'  ✗ マッチしない ({len(nomatch_samples)}件):', nc))
+                for s in nomatch_samples:
+                    lines.append(cc(BR, '    ✗ ', nc) + cc(DC, repr(s), nc))
+                lines.append('')
+        except Exception:
+            pass
+
+        lines += [cc(D, '  テスト文字列を POST で送信してください:', nc),
+                  cc(BW, f'  $ echo "Hello World" | curl -d @- clilap.org/regex/{quote(pattern)}', nc),
+                  sep(nc)]
         return '\n'.join(lines) + '\n'
 
     matches = list(compiled.finditer(text))
