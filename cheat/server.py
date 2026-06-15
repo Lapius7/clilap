@@ -174,7 +174,7 @@ def render_help(no_color, lang='ja', cjk_width=2):
         ])
         b3 = box([
             c(C, '?en') + '  ' + c(D, '英語表示'),
-            c(C, '?nocolor') + '  ' + c(D, 'カラー無効'),
+            '',
             '',
             c(D, 'デフォルトは日本語'),
             c(D, '?en で英語に'),
@@ -193,7 +193,7 @@ def render_help(no_color, lang='ja', cjk_width=2):
             c(D,  '  ?en'),
             '',
             c(BC, '$ curl cheat/ls'),
-            c(D,  '  ?nocolor'),
+            '',
             '',
         ])
         b6 = box([
@@ -224,7 +224,7 @@ def render_help(no_color, lang='ja', cjk_width=2):
         ])
         b3 = box([
             c(C, '?ja') + '  ' + c(D, 'Japanese'),
-            c(C, '?nocolor') + '  ' + c(D, 'No colors'),
+            '',
             '',
             c(D, 'Default: English'),
             c(D, 'Falls back to'),
@@ -243,7 +243,7 @@ def render_help(no_color, lang='ja', cjk_width=2):
             c(D,  '  ?ja'),
             '',
             c(BC, '$ curl cheat/ls'),
-            c(D,  '  ?nocolor'),
+            '',
             '',
         ])
         b6 = box([
@@ -256,7 +256,7 @@ def render_help(no_color, lang='ja', cjk_width=2):
         ])
         hint = c(DC, '  ?nocolor  ?ja')
 
-    out = art + [''] + merge3(b1, b2, b3) + [''] + merge3(b4, b5, b6) + ['', hint]
+    out = art + [''] + merge3(b1, b2, b3) + [''] + merge3(b4, b5, b6)
     return '\n'.join(out) + '\n'
 
 def render_help_html(lang):
@@ -298,7 +298,7 @@ def render_help_html(lang):
              '<span class="dim">3,000以上のコマンド</span>',
              '<span class="dim">(tldr-pages)</span>'],
             ['<span class="opt">?en</span>  <span class="dim">英語表示</span>',
-             '<span class="opt">?nocolor</span>  <span class="dim">カラー無効</span>',
+             '',
              '',
              '<span class="dim">デフォルトは日本語</span>',
              '<span class="dim">?en で英語に</span>',
@@ -313,7 +313,7 @@ def render_help_html(lang):
              '<span class="dim">  ?en</span>',
              '',
              '<span class="cmd">$ curl cheat/ls</span>',
-             '<span class="dim">  ?nocolor</span>'],
+             ''],
             ['<span class="dim">データソース:</span>',
              '<span class="opt">tldr-pages</span>',
              '',
@@ -333,7 +333,7 @@ def render_help_html(lang):
              '<span class="dim">3,000+ commands</span>',
              '<span class="dim">(tldr-pages)</span>'],
             ['<span class="opt">?ja</span>  <span class="dim">Japanese</span>',
-             '<span class="opt">?nocolor</span>  <span class="dim">No colors</span>',
+             '',
              '',
              '<span class="dim">Default: English</span>',
              '<span class="dim">Falls back to</span>',
@@ -348,7 +348,7 @@ def render_help_html(lang):
              '<span class="dim">  ?ja</span>',
              '',
              '<span class="cmd">$ curl cheat/ls</span>',
-             '<span class="dim">  ?nocolor</span>'],
+             ''],
             ['<span class="dim">Data source:</span>',
              '<span class="opt">tldr-pages</span>',
              '',
@@ -363,12 +363,11 @@ def render_help_html(lang):
 
     grid1 = '<div class="grid">' + ''.join(render_box(b) for b in boxes1) + '</div>'
     grid2 = '<div class="grid">' + ''.join(render_box(b) for b in boxes2) + '</div>'
-    hint = f'<div class="hint">{hint_text}</div>'
-
+    cr = '<div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
     return (f'<!DOCTYPE html><html><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>cheat - Help</title><style>{css}</style></head>'
-            f'<body>{art_html}{grid1}{grid2}{hint}</body></html>')
+            f'<title>cheat - Clilap</title><style>{css}</style></head>'
+            f'<body>{art_html}{grid1}{grid2}{cr}</body></html>')
 
 def pad_to(s, width, cjk_width=2):
     plain = re.sub(r'\x1b\[[^m]*m', '', s)
@@ -404,7 +403,6 @@ def render_lang_hint(current_lang, nc, fell_back=False):
             line_len += len(SEP) + len(plain)
     if line_len > len(indent):
         lines.append(line)
-    lines.append(margin + c(C, '?nocolor'))
     return '\n'.join(lines)
 
 def lang_links_html(current_lang, fell_back=False):
@@ -420,7 +418,7 @@ def lang_links_html(current_lang, fell_back=False):
             lang_parts.append(f'<a href="?{l}">{l}</a>')
     return ('<div style="margin-top:12px;color:#5c6370;font-size:11px;line-height:1.8">'
             f'<span style="color:#56b6c2">?</span> {" ".join(lang_parts)}'
-            '<br><a href="?nocolor">?nocolor</a></div>')
+            '</div>')
 
 # ---------- ANSI-to-HTML ----------
 _A2H = {
@@ -453,6 +451,8 @@ def ansi_to_html(text):
     out.extend(['</span>'] * depth)
     return ''.join(out)
 
+_COPYRIGHT = '<div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
+
 def html_wrap(ansi_text, title='Cheat', footer_html=''):
     css = ('*{box-sizing:border-box;margin:0;padding:0}'
            'body{background:#000;color:#aaa;'
@@ -463,7 +463,7 @@ def html_wrap(ansi_text, title='Cheat', footer_html=''):
     return (f'<!DOCTYPE html><html><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{title}</title><style>{css}</style></head>'
-            f'<body><pre>{ansi_to_html(ansi_text)}</pre>{footer_html}</body></html>')
+            f'<body><pre>{ansi_to_html(ansi_text)}</pre>{footer_html}{_COPYRIGHT}</body></html>')
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -519,7 +519,7 @@ class Handler(BaseHTTPRequestHandler):
             return msg
 
         if browser:
-            send(html_wrap(render_body(False, include_hint=False), f'cheat/{cmd or ":list"}', lang_links_html(lang, fell_back)), html=True)
+            send(html_wrap(render_body(False, include_hint=False), f'cheat/{cmd or ":list"} - Clilap', lang_links_html(lang, fell_back)), html=True)
         else:
             send(render_body(no_color))
 

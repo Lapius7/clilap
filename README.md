@@ -1,4 +1,10 @@
-# clilap
+```
+      _ _ _ _ _ _
+    /    I  ( )  I _ _ _ _
+   I  (  I   I   I  /  _ _  \
+    \ _ _ I   I   I  \(_ _  /
+                     |_|
+```
 
 [![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
 [![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
@@ -155,11 +161,10 @@ curl clilap.org/parrot
 
 ## Common Options
 
-| Option     | Effect              |
-|------------|---------------------|
-| `?nocolor` | Disable ANSI colors |
-| `?ja`      | Japanese output     |
-| `?en`      | English output      |
+| Option | Effect          |
+|--------|-----------------|
+| `?ja`  | Japanese output |
+| `?en`  | English output  |
 
 ---
 
@@ -170,7 +175,7 @@ curl clilap.org/parrot
 - Cheat sheets: [tldr-pages](https://github.com/tldr-pages/tldr) (CC BY 4.0)
 - IP geolocation: [geoip-lite](https://github.com/geoip-lite/node-geoip-lite)
 - GitHub info: [GitHub REST API](https://docs.github.com/en/rest)
-- QR codes: [libqrencode](https://github.com/fukuchi/libqrencode) via [qrenco.de](https://github.com/chubin/qrenco.de)
+- QR codes: [libqrencode](https://github.com/fukuchi/libqrencode)
 - Parrot animation: [terminal-parrot](https://github.com/jmhobbs/terminal-parrot)
 
 ---

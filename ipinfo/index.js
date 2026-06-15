@@ -127,7 +127,9 @@ function ansiToHtml(text) {
   return out + '</span>'.repeat(depth);
 }
 
-function htmlWrap(ansiText, title = 'IPInfo') {
+const _FOOTER = '<div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>';
+
+function htmlWrap(ansiText, title = 'ipinfo - Clilap') {
   const css = '*{box-sizing:border-box;margin:0;padding:0}' +
     'body{background:#000;color:#aaa;font-family:"Courier New",Consolas,monospace;' +
     'font-size:12px;line-height:1.5;padding:16px}' +
@@ -136,7 +138,7 @@ function htmlWrap(ansiText, title = 'IPInfo') {
   return `<!DOCTYPE html><html><head><meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width,initial-scale=1">` +
     `<title>${title}</title><style>${css}</style></head>` +
-    `<body><pre>${ansiToHtml(ansiText)}</pre></body></html>`;
+    `<body><pre>${ansiToHtml(ansiText)}</pre>${_FOOTER}</body></html>`;
 }
 
 function renderHelp(noColor) {
@@ -149,18 +151,22 @@ function renderHelp(noColor) {
   const op = (flag, desc) => `  ${pad(c(C, flag), 14)} ${c(D, desc)}`;
   return [
     SEP,
-    `  ${c('\x1b[1;37m', 'cli.lapius7.com/ipinfo')}  ${c(D, '🌐 IP情報')}`,
+    `  ${c('\x1b[1;37m', 'clilap.org/ipinfo')}  ${c(D, '🌐 IP情報')}`,
+    c(D, '  IPアドレスから位置情報・組織・タイムゾーンなどを取得します。'),
     div, '',
-    ex('curl cli.lapius7.com/ipinfo',         '自分のIPを調べる'),
-    ex('curl cli.lapius7.com/ipinfo/1.2.3.4', '特定IPを調べる'),
-    ex('curl cli.lapius7.com/ipinfo/8.8.8.8', '例: Google DNS'),
+    ex('curl clilap.org/ipinfo',         '自分のIPを調べる (現在のIPを自動判定)'),
+    ex('curl clilap.org/ipinfo/1.2.3.4', '特定IPを調べる'),
+    ex('curl clilap.org/ipinfo/8.8.8.8', '例: Google Public DNS'),
+    ex('curl clilap.org/ipinfo/me',      '自分のIPを明示的に指定'),
+    '', div,
+    `  ${c('\x1b[1;37m', '取得できる情報:')}`,
+    c(D,  '  ip · hostname · city · region · country · timezone · org'),
     '', div,
     `  ${c('\x1b[1;37m', 'オプション:')}`,
-    op('?json',    'JSON形式で出力'),
-    op('?nocolor', 'カラー無効'),
+    op('?json',    'JSON形式で出力 (API連携やスクリプトに便利)'),
     '',
     SEP,
-    c(DC, '  ?json  ?nocolor'),
+    c(DC, '  ?json'),
   ].join('\n') + '\n';
 }
 
@@ -183,7 +189,7 @@ function buildText(geo, hostname, noColor) {
 
   const maxK = Math.max(...fields.map(([k]) => k.length)) + 1;
   const sep  = noColor ? '═'.repeat(45) : `${DC}${'═'.repeat(45)}${R}`;
-  const hint = noColor ? '  ?json  ?nocolor' : `${DC}  ?json  ?nocolor${R}`;
+  const hint = noColor ? '  ?json' : `${DC}  ?json${R}`;
 
   const renderVal = (v, url) => {
     if (!url || noColor) return v;
@@ -212,7 +218,7 @@ const server = http.createServer(async (req, res) => {
 
   if (reqUrl.pathname === '/help') {
     if (browser) {
-      send(htmlWrap(renderHelp(false), 'IPInfo - Help'), 'text/html; charset=utf-8');
+      send(htmlWrap(renderHelp(false), 'ipinfo - Clilap'), 'text/html; charset=utf-8');
     } else {
       send(renderHelp(noColor), 'text/plain; charset=utf-8');
     }
@@ -245,7 +251,7 @@ const server = http.createServer(async (req, res) => {
 
   const text = buildText(geo, hostname, false);
   if (browser) {
-    send(htmlWrap(text, `IPInfo - ${targetIp}`), 'text/html; charset=utf-8');
+    send(htmlWrap(text, `ipinfo/${targetIp} - Clilap`), 'text/html; charset=utf-8');
   } else {
     send(buildText(geo, hostname, noColor), 'text/plain; charset=utf-8');
   }

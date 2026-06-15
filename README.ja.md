@@ -1,4 +1,10 @@
-# clilap
+```
+      _ _ _ _ _ _
+    /    I  ( )  I _ _ _ _
+   I  (  I   I   I  /  _ _  \
+    \ _ _ I   I   I  \(_ _  /
+                     |_|
+```
 
 [![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
 [![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
@@ -154,10 +160,9 @@ curl clilap.org/parrot
 ## 共通オプション
 
 | オプション | 効果 |
-|----------|------|
-| `?nocolor` | ANSIカラー無効 |
-| `?ja` | 日本語表示 |
-| `?en` | 英語表示 |
+|-----------|------|
+| `?ja`     | 日本語表示 |
+| `?en`     | 英語表示 |
 
 ---
 
@@ -168,7 +173,7 @@ curl clilap.org/parrot
 - チートシート: [tldr-pages](https://github.com/tldr-pages/tldr)（CC BY 4.0）
 - IP位置情報: [geoip-lite](https://github.com/geoip-lite/node-geoip-lite)
 - GitHub情報: [GitHub REST API](https://docs.github.com/en/rest)
-- QRコード: [libqrencode](https://github.com/fukuchi/libqrencode) / [qrenco.de](https://github.com/chubin/qrenco.de)
+- QRコード: [libqrencode](https://github.com/fukuchi/libqrencode)
 - Parrot: [terminal-parrot](https://github.com/jmhobbs/terminal-parrot)
 
 ---
