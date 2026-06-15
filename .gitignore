@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+ve/
+env/
+.venv/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Logs
+*.log
+log/
+logs/
+
+# ipinfo GeoIP database (large binary data, install via npm)
+ipinfo/node_modules/
+
+# qrenco venv
+qrenco/bin/ve/
+qrenco/log/
+
+# parrot node_modules
+parrot/node_modules/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
