@@ -160,6 +160,249 @@ A colorful party parrot animation.
 curl clilap.org/parrot
 ```
 
+### 🔐 Password Generator — `/password`
+
+Cryptographically secure password or passphrase generation.
+
+```bash
+curl clilap.org/password              # 20-char password
+curl clilap.org/password/32           # 32-char password
+curl clilap.org/password?no-symbols   # letters + digits only
+curl clilap.org/password/phrase       # passphrase
+curl clilap.org/password/phrase/5     # 5-word passphrase
+```
+
+### 📐 Unit Converter — `/unit`
+
+Convert between units of length, weight, time, data, speed, and temperature.
+
+```bash
+curl clilap.org/unit/100km/mi         # distance
+curl clilap.org/unit/1024MB/GiB       # data size
+curl clilap.org/unit/100C/F           # temperature
+curl clilap.org/unit/3600s/h          # time
+```
+
+### 💱 Exchange Rate — `/rate`
+
+Real-time forex rates (ECB via Frankfurter) and crypto prices (CoinGecko).
+
+```bash
+curl clilap.org/rate/USD              # all rates for USD
+curl clilap.org/rate/USD/JPY          # USD → JPY
+curl clilap.org/rate/USD/JPY,EUR,GBP  # multiple targets
+curl clilap.org/rate/BTC              # Bitcoin price
+curl clilap.org/rate/ETH/USD          # ETH → USD
+```
+
+### 🕐 World Time — `/time`
+
+Current time in cities around the world.
+
+```bash
+curl clilap.org/time                  # major city clocks
+curl clilap.org/time/Tokyo
+curl clilap.org/time/New+York
+curl clilap.org/time/Tokyo/London     # compare two cities
+curl clilap.org/time/America/Chicago  # IANA timezone name
+```
+
+### 🔒 SSL Certificate — `/ssl`
+
+SSL/TLS certificate details including expiry and SANs.
+
+```bash
+curl clilap.org/ssl/github.com
+curl clilap.org/ssl/lapius7.com
+```
+
+### 🛡 Security Headers — `/sec`
+
+HTTP security header audit with grade (A+ to F).
+
+```bash
+curl clilap.org/sec/github.com
+curl clilap.org/sec/lapius7.com
+```
+
+### 🗺 DNS Map — `/dnsmap`
+
+Query a domain across 4 resolvers (Cloudflare, Google, Quad9, OpenDNS) simultaneously.
+
+```bash
+curl clilap.org/dnsmap/github.com
+```
+
+### 🌐 DNS All Records — `/dns/{domain}/all`
+
+Export all DNS record types (A/AAAA/MX/NS/TXT/CNAME/SOA/CAA/SRV) at once.
+
+```bash
+curl clilap.org/dns/github.com/all
+curl clilap.org/dns/lapius7.com/all
+```
+
+### 🔌 Port Check — `/portcheck`
+
+Check if a port is open on a remote host.
+
+```bash
+curl clilap.org/portcheck/github.com/443
+curl clilap.org/portcheck/example.com/22
+```
+
+### 🔗 Redirect Chain — `/redirect`
+
+Trace all HTTP redirects for a URL.
+
+```bash
+curl clilap.org/redirect/https://bit.ly/...
+curl clilap.org/redirect/https://t.co/...
+```
+
+### 📦 Package Info — `/package`
+
+npm and PyPI package metadata.
+
+```bash
+curl clilap.org/package/npm/express
+curl clilap.org/package/npm/@types/node
+curl clilap.org/package/pypi/requests
+```
+
+### 🎨 ASCII Art — `/ascii`
+
+Generate ASCII art via figlet.
+
+```bash
+curl clilap.org/ascii/Hello
+curl "clilap.org/ascii/Hi?font=slant"
+```
+
+### 🔢 Base Converter — `/base`
+
+Convert between binary, octal, decimal, and hexadecimal.
+
+```bash
+curl clilap.org/base/10/255           # decimal → all
+curl clilap.org/base/16/ff            # hex → all
+curl clilap.org/base/10/2/255         # decimal → binary
+```
+
+### 🔗 URL Encode/Decode — `/urlencode` `/urldecode`
+
+```bash
+curl clilap.org/urlencode/hello+world
+curl clilap.org/urldecode/hello%20world
+echo "hello world" | curl -d @- clilap.org/urlencode
+```
+
+### 📅 Calendar — `/cal`
+
+Terminal calendar with today highlighted.
+
+```bash
+curl clilap.org/cal                   # current year
+curl clilap.org/cal/2026              # full year
+curl clilap.org/cal/2026/6            # specific month
+```
+
+### ⏰ Cron Parser — `/cron`
+
+Translate cron expressions into human-readable descriptions.
+
+```bash
+curl clilap.org/cron/0_9_%2A_%2A_1-5  # weekdays at 9:00
+curl clilap.org/cron/@daily
+curl clilap.org/cron/@weekly
+```
+
+### 🔑 TOTP Generator — `/totp`
+
+Generate TOTP one-time passwords from a Base32 secret.
+
+```bash
+curl clilap.org/totp/JBSWY3DPEHPK3PXP
+```
+
+> ⚠ Do not use with real secrets over HTTP — for testing only.
+
+### 🎲 Mock Data — `/mock`
+
+Generate fake JSON user data or Lorem Ipsum text.
+
+```bash
+curl clilap.org/mock/json             # 1 fake user
+curl clilap.org/mock/json/10          # 10 fake users
+curl clilap.org/mock/lorem            # 1 Lorem paragraph
+curl clilap.org/mock/lorem/3          # 3 paragraphs
+```
+
+### 🚫 .gitignore Generator — `/gitignore`
+
+Fetch GitHub gitignore templates. Combine multiple languages.
+
+```bash
+curl clilap.org/gitignore/node
+curl clilap.org/gitignore/python
+curl clilap.org/gitignore/node,python,macos,vscode
+```
+
+### 📜 License Text — `/license`
+
+Open source license templates with auto-filled year and holder.
+
+```bash
+curl clilap.org/license/mit
+curl "clilap.org/license/mit?holder=Lapius7"
+curl clilap.org/license/apache
+curl clilap.org/license/gpl-3
+```
+
+Supported: `mit` `apache` `gpl-3` `gpl-2` `lgpl` `mpl` `isc` `bsd-2` `bsd-3` `unlicense` `agpl` `cc0`
+
+### {} JSON Formatter — `/json`
+
+Format and validate JSON. POST body.
+
+```bash
+echo '{"a":1}' | curl -d @- clilap.org/json
+curl -d @data.json clilap.org/json
+curl -d @data.json "clilap.org/json?compact"
+```
+
+### 📝 Diff — `/diff`
+
+Colored unified diff of two files.
+
+```bash
+curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff
+```
+
+### 📄 Markdown Renderer — `/md`
+
+Render Markdown as ANSI-colored terminal output.
+
+```bash
+cat README.md | curl -d @- clilap.org/md
+curl -d @README.md clilap.org/md
+```
+
+### 🔡 Unicode Tools — `/unicode`
+
+Character info, text inspection, name search, and fancy text styles.
+
+```bash
+curl clilap.org/unicode/A                     # char info
+curl clilap.org/unicode/あ
+echo "Hello, 世界" | curl -d @- clilap.org/unicode/inspect
+curl clilap.org/unicode/search/star           # search by name
+curl clilap.org/unicode/fancy/bold/Hello      # fancy text
+curl clilap.org/unicode/fancy                 # list all styles
+```
+
+Fancy styles: `bold` `italic` `bolditalic` `script` `boldscript` `gothic` `doublestruck` `sans` `monospace` `circled` `bubble` ...
+
 ---
 
 ## Common Options
@@ -180,6 +423,12 @@ curl clilap.org/parrot
 - GitHub info: [GitHub REST API](https://docs.github.com/en/rest)
 - QR codes: [libqrencode](https://github.com/fukuchi/libqrencode)
 - Parrot animation: [terminal-parrot](https://github.com/jmhobbs/terminal-parrot)
+- Exchange rates: [Frankfurter (ECB)](https://frankfurter.app/)
+- Crypto prices: [CoinGecko](https://www.coingecko.com/)
+- npm packages: [npmjs.org](https://www.npmjs.com/)
+- PyPI packages: [pypi.org](https://pypi.org/)
+- .gitignore templates: [github/gitignore](https://github.com/github/gitignore)
+- License text: [GitHub Licenses API](https://docs.github.com/en/rest/licenses)
 
 ---
 
