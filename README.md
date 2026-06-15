@@ -1,9 +1,16 @@
 # clilap
 
+[![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
+[![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
+[![Issues](https://img.shields.io/github/issues/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/commits)
+[![Repo Size](https://img.shields.io/github/repo-size/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Node.js](https://img.shields.io/badge/node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![curl](https://img.shields.io/badge/try%20it-curl%20clilap.org-4ec9b0?style=flat-square)](https://clilap.org)
 
-A collection of developer-friendly CLI tools accessible via `curl`. No installation required.
+No-install developer tools accessible via `curl`. Weather forecasts, cheat sheets, GitHub info, DNS lookup, hashing, and more — all from your terminal.
 
 ```
 curl clilap.org
@@ -97,7 +104,7 @@ echo "hello" | curl -d @- clilap.org/hash/sha256
 Convert between Unix timestamps and human-readable dates.
 
 ```bash
-curl clilap.org/epoch                # Current time
+curl clilap.org/epoch                # Current time (UTC + local)
 curl clilap.org/epoch/1700000000     # Unix timestamp → date
 curl clilap.org/epoch/2024-01-01     # Date → Unix timestamp
 curl clilap.org/epoch/2024-01-01T12:00:00
