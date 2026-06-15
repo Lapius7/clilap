@@ -121,6 +121,31 @@ def help_page():
     no_color = "nocolor" in request.args or "nc" in request.args
     is_curl = any(x in ua for x in ("curl", "wget", "python", "httpie"))
 
+    if not is_curl:
+        html = """<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>qr - Clilap</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#000;color:#aaa;font-family:"Courier New",Consolas,Monaco,"Lucida Console",monospace;font-size:12px;line-height:1.5;padding:16px}pre{font-family:inherit;white-space:pre;margin:0}a{color:#4ec9b0;text-decoration:none}a:hover{text-decoration:underline}</style></head><body><pre><span style="color:#4b8ea8">════════════════════════════════════════════════════════════</span>
+  <span style="color:#abb2bf;font-weight:bold">clilap.org/qr</span>  <span style="color:#4b8ea8">🔲 QRコード生成</span>
+<span style="color:#4b8ea8">  ──────────────────────────────────────────────────────────</span>
+  <span style="color:#5c6370">テキストやURLをターミナル上でQRコードに変換します。</span>
+  <span style="color:#5c6370">スマートフォンで読み取り可能な文字セルQRを生成します。</span>
+
+  <span style="color:#61afef;font-weight:bold">curl clilap.org/qr/Hello</span>
+  <span style="color:#61afef;font-weight:bold">curl clilap.org/qr/https://lapius7.com</span>
+  <span style="color:#61afef;font-weight:bold">curl clilap.org/qr/あいうえお</span>
+
+<span style="color:#4b8ea8">  ──────────────────────────────────────────────────────────</span>
+  <span style="color:#abb2bf;font-weight:bold">オプション:</span>
+  <span style="color:#56b6c2">?size=N</span>            セルサイズ 1-10 (デフォルト1)
+  <span style="color:#56b6c2">?margin=N</span>          余白サイズ 0-10 (デフォルト1)
+  <span style="color:#56b6c2">?level=L|M|Q|H</span>     誤り訂正レベル L:低 M:中 Q:高 H:最高
+  <span style="color:#56b6c2">?compact</span>           コンパクト表示 (半ブロック文字で半分のサイズ)
+  <span style="color:#56b6c2">?invert</span>            色反転 (白背景ターミナル用)
+
+  <span style="color:#4b8ea8">例: curl clilap.org/qr/Hello?size=3&amp;level=H</span>
+
+<span style="color:#4b8ea8">════════════════════════════════════════════════════════════</span>
+</pre><div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div></body></html>"""
+        return html, 200, {"Content-Type": "text/html; charset=utf-8"}
+
     ESC = "\x1b"
     def c(code, text):
         return text if no_color else f"{ESC}[{code}m{text}{ESC}[0m"
@@ -130,10 +155,10 @@ def help_page():
     div = c("2;36", "  " + "─" * (W - 2))
     lines = [
         SEP,
-        f"  {c('1;37', 'cli.lapius7.com/qr')}  {c('2', '🔲 QRコード生成')}",
+        f"  {c('1;37', 'clilap.org/qr')}  {c('2', '🔲 QRコード生成')}",
         div, "",
-        f"  {c('1;36', 'curl cli.lapius7.com/qr/Hello')}",
-        f"  {c('1;36', 'curl cli.lapius7.com/qr/https://lapius7.com')}",
+        f"  {c('1;36', 'curl clilap.org/qr/Hello')}",
+        f"  {c('1;36', 'curl clilap.org/qr/https://lapius7.com')}",
         "", div,
         f"  {c('1;37', 'オプション:')}",
         f"  {c('36', '?size=N')}     セルサイズ 1-10 (デフォルト1)",
@@ -142,7 +167,7 @@ def help_page():
         f"  {c('36', '?compact')}    コンパクト表示 (半ブロック文字)",
         f"  {c('36', '?invert')}     色反転 (白背景ターミナル用)",
         "",
-        f"  {c('2', '例: curl cli.lapius7.com/qr/Hello?size=3&level=H')}",
+        f"  {c('2', '例: curl clilap.org/qr/Hello?size=3&level=H')}",
         "",
         SEP,
         c("2;36", "  ?size=N  ?margin=N  ?level=L|M|Q|H  ?compact  ?invert"),

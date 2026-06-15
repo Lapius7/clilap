@@ -38,17 +38,26 @@ def github_button(button):
 
 
 def html_wrapper(answer):
-    style = "background-color: black; color: white;"
-    buttons = "".join(github_button(x) for x in ["qrenco.de", "libqrencode"])
-    buttons += GITHUB_BUTTON_FOOTER
+    if isinstance(answer, bytes):
+        answer = answer.decode('utf-8', errors='replace')
+    answer = answer.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    css = ('*{box-sizing:border-box;margin:0;padding:0}'
+           'body{background:#000;color:#fff;'
+           'font-family:"Courier New",Consolas,Monaco,"Lucida Console",monospace;'
+           'font-size:14px;line-height:1.2;padding:16px}'
+           'pre{font-family:inherit;white-space:pre;margin:0}'
+           '.footer{margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;'
+           'color:#333;font-size:11px}')
     return (
-        "<html>"
-        "<head>"
-        "<title>qrenco.de</title>"
-        "</head>"
-        "<body style='%s'><pre>%s</pre>%s</body>"
-        "</html>"
-    ) % (style, answer, buttons)
+        '<!DOCTYPE html><html><head>'
+        '<meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        '<title>qr - Clilap</title>'
+        f'<style>{css}</style></head>'
+        f'<body><pre>{answer}</pre>'
+        '<div class="footer">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
+        '</body></html>'
+    )
 
 
 def get_internal(topic):

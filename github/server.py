@@ -320,29 +320,30 @@ def do_stars(user, repo, nc):
 def do_help(nc):
     lines = [
         sep(nc),
-        c(BW, '  clilap.org/github', nc) + c(DC, '  GitHub info via curl', nc),
+        c(BW, '  clilap.org/github', nc) + c(DC, '  🐙 GitHub情報をターミナルで確認', nc),
+        c(D,  '  GitHub APIを使ってリポジトリ・ユーザー情報を取得します。', nc),
         '',
         c(BC, '  /github/:user', nc),
-        c(DC, '    user profile + recent repos', nc),
+        c(DC, '    ユーザープロフィール + 最近のリポジトリ一覧', nc),
         '',
         c(BC, '  /github/:user/:repo', nc),
-        c(DC, '    repo overview (stars, forks, language, license)', nc),
+        c(DC, '    リポジトリ概要 (スター数・フォーク数・言語・ライセンス等)', nc),
         '',
         c(BC, '  /github/:user/:repo/', nc) + c(BY, '{view}', nc),
         *[c(DC, f'    {v}', nc) for v in
-          ['readme   — README content',
-           'releases — release history',
-           'commits  — recent commit log',
-           'issues   — open issues',
-           'prs      — open pull requests',
-           'stars    — star count only']],
+          ['readme   — READMEを表示',
+           'releases — リリース履歴',
+           'commits  — 最新コミット一覧',
+           'issues   — オープンなIssue',
+           'prs      — オープンなPR一覧',
+           'stars    — スター数のみ表示']],
         '',
-        c(D,  '  Examples:', nc),
+        c(D,  '  使用例:', nc),
         c(C,  '  curl clilap.org/github/curl/curl', nc),
         c(C,  '  curl clilap.org/github/torvalds/linux/commits', nc),
         c(C,  '  curl clilap.org/github/tj/n/releases', nc),
+        c(C,  '  curl clilap.org/github/Lapius7', nc),
         sep(nc),
-        hint(nc, '  ?nocolor  to disable colors'),
     ]
     return '\n'.join(lines) + '\n'
 
@@ -377,12 +378,13 @@ _CSS = ('*{box-sizing:border-box;margin:0;padding:0}'
         'font-size:12px;line-height:1.5;padding:16px}'
         'pre{font-family:inherit;white-space:pre;margin:0}'
         'a{color:#4ec9b0;text-decoration:none}a:hover{text-decoration:underline}')
+_FOOTER = '<div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
 
-def html_wrap(ansi_text, title='GitHub'):
+def html_wrap(ansi_text, title='github - Clilap'):
     return (f'<!DOCTYPE html><html><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{title}</title><style>{_CSS}</style></head>'
-            f'<body><pre>{ansi_to_html(ansi_text)}</pre></body></html>')
+            f'<body><pre>{ansi_to_html(ansi_text)}</pre>{_FOOTER}</body></html>')
 
 
 # ── Handler ───────────────────────────────────────────────────────────────
@@ -394,7 +396,7 @@ class Handler(BaseHTTPRequestHandler):
         qs      = parse_qs(parsed.query, keep_blank_values=True)
         ua      = self.headers.get('User-Agent', '')
         browser = is_browser(ua)
-        nc      = 'nocolor' in qs or 'nc' in qs or browser
+        nc      = 'nocolor' in qs or 'nc' in qs
 
         parts = [p for p in parsed.path.split('/') if p]
         # parts[0] == 'github' (stripped by nginx), or empty

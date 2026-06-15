@@ -52,16 +52,18 @@ def ansi_to_html(text):
     out.extend(['</span>'] * depth)
     return ''.join(out)
 
+_CSS = ('*{box-sizing:border-box;margin:0;padding:0}'
+        'body{background:#000;color:#aaa;font-family:"Courier New",Consolas,Monaco,monospace;'
+        'font-size:12px;line-height:1.5;padding:16px}'
+        'pre{font-family:inherit;white-space:pre;margin:0}'
+        'a{color:#4ec9b0;text-decoration:none}a:hover{text-decoration:underline}')
+_FOOTER = '<div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
+
 def html_wrap(ansi_text, title='CLI Utils'):
-    css = ('*{box-sizing:border-box;margin:0;padding:0}'
-           'body{background:#000;color:#aaa;font-family:"Courier New",Consolas,Monaco,monospace;'
-           'font-size:12px;line-height:1.5;padding:16px}'
-           'pre{font-family:inherit;white-space:pre;margin:0}'
-           'a{color:#4ec9b0;text-decoration:none}a:hover{text-decoration:underline}')
     return (f'<!DOCTYPE html><html><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>{title}</title><style>{css}</style></head>'
-            f'<body><pre>{ansi_to_html(ansi_text)}</pre></body></html>')
+            f'<title>{title}</title><style>{_CSS}</style></head>'
+            f'<body><pre>{ansi_to_html(ansi_text)}</pre>{_FOOTER}</body></html>')
 
 def sep(nc): return '═' * 60 if nc else DC + '═' * 60 + R
 def c(code, text, nc): return text if nc else code + text + R
@@ -102,10 +104,14 @@ def do_b64(action, data, nc):
 
 def do_b64_help(nc):
     lines = [sep(nc),
-             c(BC, '  base64 encode / decode', nc), '',
+             c(BC, '  base64', nc) + c(DC, ' — テキストのエンコード / デコード', nc),
+             c(D,  '  バイナリデータをテキスト形式で扱う際に使われる変換方式です。', nc),
+             c(D,  '  URLやHTTPヘッダーで安全にデータを送るのに便利です。', nc),
+             '',
              c(BW, '  $ curl clilap.org/b64/encode/hello', nc),
              c(BW, '  $ curl clilap.org/b64/decode/aGVsbG8=', nc),
-             c(BW, '  $ echo "hello" | curl -d @- clilap.org/b64/encode', nc),
+             c(BW, '  $ echo "hello world" | curl -d @- clilap.org/b64/encode', nc),
+             c(BW, '  $ echo "aGVsbG8=" | curl -d @- clilap.org/b64/decode', nc),
              sep(nc)]
     return '\n'.join(lines) + '\n'
 
@@ -136,11 +142,23 @@ def do_hash(algo, data, nc):
 
 def do_hash_help(nc):
     lines = [sep(nc),
-             c(BC, '  hash', nc), '',
+             c(BC, '  hash', nc) + c(DC, ' — テキスト・データのハッシュ値を計算', nc),
+             c(D,  '  ファイルの改ざん検知、パスワード保管、データ識別などに使われます。', nc),
+             '',
              *[c(BW, f'  $ curl clilap.org/hash/{a}/hello', nc) for a in HASH_ALGOS[:3]],
              c(D, '  ...', nc),
-             c(D, f'  algos: {", ".join(HASH_ALGOS)}', nc),
+             '',
+             c(DC, '  対応アルゴリズム:', nc),
+             c(D,  '  md5      128bit  高速・広く普及 (衝突リスクあり、互換用途のみ推奨)', nc),
+             c(D,  '  sha1     160bit  後方互換用途向け', nc),
+             c(D,  '  sha256   256bit  一般用途に推奨', nc),
+             c(D,  '  sha512   512bit  高セキュリティ用途', nc),
+             c(D,  '  sha3_256 256bit  SHA-3世代 (最新規格)', nc),
+             c(D,  '  sha3_512 512bit  SHA-3世代・高セキュリティ', nc),
+             '',
+             c(BW, '  # stdinからも入力可能:', nc),
              c(BW, '  $ echo "hello" | curl -d @- clilap.org/hash/sha256', nc),
+             c(BW, '  $ cat file.txt  | curl -d @- clilap.org/hash/md5', nc),
              sep(nc)]
     return '\n'.join(lines) + '\n'
 
@@ -225,10 +243,30 @@ def do_dns(domain, rtype, nc):
     return '\n'.join(lines) + '\n'
 
 def do_dns_help(nc):
-    lines = [sep(nc), c(BC, '  dns lookup', nc), '',
+    lines = [sep(nc), c(BC, '  dns lookup', nc) + c(DC, ' — ドメインの名前解決', nc),
+             c(D, '  DNSレコードを照会してIPアドレスやメール設定を確認できます。', nc),
+             '',
              c(BW, '  $ curl clilap.org/dns/google.com', nc),
              c(BW, '  $ curl clilap.org/dns/google.com/MX', nc),
-             c(D, f'  types: {", ".join(DNS_TYPES)}', nc),
+             c(BW, '  $ curl clilap.org/dns/lapius7.com/TXT', nc),
+             c(BW, '  $ curl clilap.org/dns/8.8.8.8/PTR', nc),
+             '',
+             c(DC, f'  対応タイプ: {" ".join(DNS_TYPES)}', nc),
+             c(D,  '  A=IPv4  AAAA=IPv6  MX=メール  NS=ネームサーバ  TXT=テキスト', nc),
+             sep(nc)]
+    return '\n'.join(lines) + '\n'
+
+def do_whois_help(nc):
+    lines = [sep(nc), c(BC, '  whois', nc) + c(DC, ' — ドメイン登録情報の照会', nc),
+             c(D, '  ドメインの登録者・レジストラ・有効期限・ネームサーバなどを調べます。', nc),
+             '',
+             c(BW, '  $ curl clilap.org/whois/google.com', nc),
+             c(BW, '  $ curl clilap.org/whois/github.com', nc),
+             c(BW, '  $ curl clilap.org/whois/lapius7.com', nc),
+             '',
+             c(DC, '  取得できる情報:', nc),
+             c(D,  '  Registrar=登録業者  Created=登録日  Expires=有効期限', nc),
+             c(D,  '  Updated=更新日  Status=ステータス  Name Servers=DNSサーバ', nc),
              sep(nc)]
     return '\n'.join(lines) + '\n'
 
@@ -307,10 +345,16 @@ def do_color(value, nc):
     return '\n'.join(lines) + '\n'
 
 def do_color_help(nc):
-    lines = [sep(nc), c(BC, '  color', nc), '',
+    lines = [sep(nc), c(BC, '  color', nc) + c(DC, ' — カラーコード変換', nc),
+             c(D, '  HEXコードやRGB値からhex/rgb/hslに変換します。', nc),
+             c(D, '  ターミナルにカラースウォッチも表示します。', nc),
+             '',
              c(BW, '  $ curl clilap.org/color/ff6b6b', nc),
              c(BW, '  $ curl clilap.org/color/255,107,107', nc),
-             c(D,  '  shows hex / rgb / hsl + terminal swatch', nc),
+             c(BW, '  $ curl clilap.org/color/3498db', nc),
+             c(BW, '  $ curl clilap.org/color/1a1a2e', nc),
+             '',
+             c(D, '  → hex / rgb / hsl + ターミナルスウォッチ表示', nc),
              sep(nc)]
     return '\n'.join(lines) + '\n'
 
@@ -335,7 +379,7 @@ class Handler(BaseHTTPRequestHandler):
         qs = parse_qs(parsed.query, keep_blank_values=True)
         ua = self.headers.get('User-Agent', '')
         browser = is_browser(ua)
-        nc = 'nocolor' in qs or 'nc' in qs or browser
+        nc = 'nocolor' in qs or 'nc' in qs
 
         parts = [p for p in parsed.path.split('/') if p]
         service = parts[0] if parts else ''
@@ -345,7 +389,7 @@ class Handler(BaseHTTPRequestHandler):
 
         def respond(text):
             if browser:
-                self._send(html_wrap(text, service), html=True)
+                self._send(html_wrap(text, f'{service} - Clilap'), html=True)
             else:
                 self._send(text)
 
@@ -395,10 +439,7 @@ class Handler(BaseHTTPRequestHandler):
         # /whois
         elif service == 'whois':
             if not args:
-                lines = [sep(nc), c(BC, '  whois', nc), '',
-                         c(BW, '  $ curl clilap.org/whois/google.com', nc),
-                         sep(nc)]
-                respond('\n'.join(lines) + '\n'); return
+                respond(do_whois_help(nc)); return
             respond(do_whois(args[0], nc))
 
         # /color

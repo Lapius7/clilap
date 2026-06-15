@@ -227,7 +227,7 @@ LABELS = {
         'feels':    '体感',
         'slots':    ['朝', '昼', '夕', '夜'],
         'slot_hrs': [6, 12, 18, 21],
-        'hint':     '  ?nocolor  ?lang=en',
+        'hint':     '  ?lang=en',
         'error':    'エラー',
         'usage':    '使い方: curl clilap.org/weather/Tokyo',
     },
@@ -235,7 +235,7 @@ LABELS = {
         'feels':    'feels',
         'slots':    ['Morn', 'Noon', 'Eve', 'Night'],
         'slot_hrs': [6, 12, 18, 21],
-        'hint':     '  ?nocolor  ?lang=ja',
+        'hint':     '  ?lang=ja',
         'error':    'Error:',
         'usage':    'Usage: curl clilap.org/weather/Tokyo',
     },
@@ -427,10 +427,18 @@ def render_help(no_color, lang='ja'):
         return '\n'.join([
             SEP,
             f'  {c(BW, "clilap.org/weather")}  {c(Y, "⛅")} {c(D, "天気予報")}',
+            c(D, '  世界中の都市の現在の天気と7日間の予報をターミナルで表示します。'),
             div, '',
+            ex('curl clilap.org/weather',            '現在地の天気 (IP位置情報を使用)'),
             ex('curl clilap.org/weather/Tokyo',      '東京の天気'),
             ex('curl clilap.org/weather/Osaka',      '大阪の天気'),
-            ex('curl clilap.org/weather/東京都/新宿区', '市区町村も指定可'),
+            ex('curl clilap.org/weather/Sapporo',    '札幌の天気'),
+            ex('curl clilap.org/weather/東京都/新宿区', '都道府県/市区町村でより正確に'),
+            ex('curl clilap.org/weather/New+York',   '海外の都市も対応'),
+            '', div,
+            f'  {c(BW, "表示内容:")}',
+            c(D, '  現在の気温・体感温度・天気・湿度・風速・降水量'),
+            c(D, '  7日間の予報 (最高/最低気温、天気アイコン)'),
             '', div,
             f'  {c(BW, "オプション:")}',
             op('?lang=en',  '英語表示'),
@@ -500,11 +508,13 @@ _BASE_CSS = ('*{box-sizing:border-box;margin:0;padding:0}'
              'pre{font-family:inherit;white-space:pre;margin:0}'
              'a{color:#4ec9b0;text-decoration:none}a:hover{text-decoration:underline}')
 
-def html_wrap(ansi_text, title='Weather'):
+_FOOTER = '<div style="margin-top:16px;padding-top:6px;border-top:1px solid #1a1a1a;color:#333;font-size:11px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
+
+def html_wrap(ansi_text, title='weather - Clilap'):
     return (f'<!DOCTYPE html><html><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{title}</title><style>{_BASE_CSS}</style></head>'
-            f'<body><pre>{ansi_to_html(ansi_text)}</pre></body></html>')
+            f'<body><pre>{ansi_to_html(ansi_text)}</pre>{_FOOTER}</body></html>')
 
 # ---------- Full HTML weather page ----------
 def render_html(location_name, data, lang='ja'):
@@ -637,7 +647,7 @@ def render_html(location_name, data, lang='ja'):
     return (f'<!DOCTYPE html><html lang="{lang}"><head>'
             f'<meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>{he(location_name)} - 天気</title>'
+            f'<title>{he(location_name)} - weather | Clilap</title>'
             f'<style>{css}</style></head><body><div class="wrap">'
             f'<div class="hd"><span class="cn">{he(location_name)}</span>'
             f'<span class="ct">{now}</span></div>'
@@ -646,7 +656,9 @@ def render_html(location_name, data, lang='ja'):
             f'{days_h}'
             f'<div class="ft"><a href="{sw_url}">{sw_lbl}</a> · '
             f'<a href="https://open-meteo.com" target="_blank">Open-Meteo</a>'
-            f'</div></div></body></html>')
+            f'</div>'
+            f'<div class="ft" style="margin-top:8px;">©2025 CLI Lap by Lapius7. All rights reserved.</div>'
+            f'</div></body></html>')
 
 # ---------- HTTP handler ----------
 class Handler(BaseHTTPRequestHandler):
@@ -674,7 +686,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == '/help':
             if browser:
-                send(html_wrap(render_help(False, lang), 'Weather Help'), html=True)
+                send(html_wrap(render_help(False, lang), 'weather - Clilap'), html=True)
             else:
                 send(render_help(no_color, lang))
             return
@@ -692,18 +704,18 @@ class Handler(BaseHTTPRequestHandler):
                         send(render(city, lat, lon, data, no_color, lang))
                 except Exception:
                     err = render_error('Service temporarily unavailable.', False, lang)
-                    send(html_wrap(err, 'Error - Weather') if browser
+                    send(html_wrap(err, 'weather - Clilap') if browser
                          else render_error('Service temporarily unavailable.', no_color, lang), html=browser)
             else:
                 send(render_help(no_color, lang) if not browser
-                     else html_wrap(render_help(False, lang), 'Weather Help'), html=browser)
+                     else html_wrap(render_help(False, lang), 'weather - Clilap'), html=browser)
             return
 
         try:
             lat, lon, display_name = geocode(location)
             if lat is None:
                 err = render_error(f'Location not found: {location}', False, lang)
-                send(html_wrap(err, 'Error - Weather') if browser
+                send(html_wrap(err, 'weather - Clilap') if browser
                      else render_error(f'Location not found: {location}', no_color, lang),
                      html=browser)
                 return
@@ -714,7 +726,7 @@ class Handler(BaseHTTPRequestHandler):
                 send(render(display_name, lat, lon, data, no_color, lang))
         except Exception:
             err = render_error('Service temporarily unavailable.', False, lang)
-            send(html_wrap(err, 'Error - Weather') if browser
+            send(html_wrap(err, 'weather - Clilap') if browser
                  else render_error('Service temporarily unavailable.', no_color, lang),
                  html=browser)
 
