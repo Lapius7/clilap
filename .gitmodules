@@ -1,0 +1,3 @@
+[submodule "cheat/tldr-pages"]
+	path = cheat/tldr-pages
+	url = https://github.com/tldr-pages/tldr
