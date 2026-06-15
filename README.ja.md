@@ -1,10 +1,4 @@
-```
-      _ _ _ _ _ _
-    /    I  ( )  I _ _ _ _
-   I  (  I   I   I  /  _ _  \
-    \ _ _ I   I   I  \(_ _  /
-                     |_|
-```
+[![Typing SVG](https://readme-typing-svg.demolab.com/?font=Fira+Code&size=45&pause=1000&color=4ec9b0&width=435&lines=clilap)](https://git.io/typing-svg)
 
 [![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
 [![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
