@@ -141,7 +141,7 @@ def render_index(nc):
         '/ascii',     '/base',      '/urlencode',  '/urldecode',
         '/cal',       '/cron',      '/totp',       '/mock',
         '/gitignore', '/license',   '/json',       '/diff',
-        '/md',        '/unicode',
+        '/md',        '/unicode',   '/regex',
     ]
     svc_cols = []
     for i in range(0, len(services), 4):
@@ -195,7 +195,7 @@ def render_not_found(path, nc):
         c(BC, '    /ascii     /base      /urlencode /urldecode'),
         c(BC, '    /cal       /cron      /totp      /mock'),
         c(BC, '    /gitignore /license   /json      /diff'),
-        c(BC, '    /md        /unicode'),
+        c(BC, '    /md        /unicode   /regex'),
         '',
         c(DC, '  curl clilap.org/help') + c(D, '  for full documentation'),
         SEP,
@@ -632,6 +632,19 @@ def render_help(nc):
         '',
         note('ファンシースタイル: bold italic bolditalic script boldscript gothic doublestruck'),
         note('                    sans sansbold monospace circled bubble ...'),
+
+        h('/regex  🔍 正規表現テスト'),
+        '',
+        sec('概要', 'Pythonの正規表現エンジンでパターンをテストします。マッチ位置・グループを表示。'),
+        '',
+        ex('curl clilap.org/regex/\\d+'),
+        ex('echo "abc 123 def 456" | curl -d @- clilap.org/regex/\\\\d+'),
+        ex('echo "Hello World" | curl -d @- "clilap.org/regex/hello?flags=i"'),
+        ex('echo "foo\\nbar" | curl -d @- "clilap.org/regex/^bar?flags=m"'),
+        ex('echo "2024-01-15" | curl -d @- "clilap.org/regex/(\\\\d{4})-(\\\\d{2})-(\\\\d{2})"'),
+        '',
+        note('フラグ: ?flags=i (大文字小文字無視)  ?flags=m (複数行)  ?flags=s (dotall)  ?flags=im (組み合わせ)'),
+        note('使用エンジン: Python re  — グループ・名前付きグループに対応'),
 
         '',
         SEP,

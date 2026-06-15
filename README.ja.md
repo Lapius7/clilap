@@ -379,6 +379,27 @@ curl clilap.org/unicode/fancy                 # スタイル一覧
 
 ---
 
+### 🔍 正規表現テスト — `/regex`
+
+Pythonの `re` エンジンで正規表現をテスト。マッチ数・位置・キャプチャグループを表示。
+
+```bash
+curl clilap.org/regex/\d+                                          # パターン確認
+echo "abc 123 def 456" | curl -d @- clilap.org/regex/\\d+         # テキストに対してマッチ
+echo "Hello World" | curl -d @- "clilap.org/regex/hello?flags=i"  # 大文字小文字無視
+echo "2024-01-15" | curl -d @- "clilap.org/regex/(\d{4})-(\d{2})-(\d{2})"
+```
+
+| フラグ | 効果 |
+|--------|------|
+| `?flags=i` | 大文字小文字無視 |
+| `?flags=m` | 複数行モード (`^`/`$` が行境界にマッチ) |
+| `?flags=s` | dotall (`.` が改行にもマッチ) |
+| `?flags=x` | 拡張モード (空白無視) |
+| `?flags=im` | フラグの組み合わせ |
+
+---
+
 ## 共通オプション
 
 | オプション | 効果 |
