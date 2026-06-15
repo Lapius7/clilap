@@ -1102,6 +1102,75 @@ def do_unicode_fancy(style, text, nc):
              hint(f'/unicode/fancy/{style}/{text}', nc)]
     return '\n'.join(lines) + '\n'
 
+def do_regex(pattern, body_bytes, qs, nc):
+    if not pattern:
+        lines = [sep(nc), cc(BC, '  正規表現テスト', nc), '',
+                 cc(BW, '  $ curl clilap.org/regex/{パターン}', nc) + cc(D, '  — パターン確認', nc),
+                 cc(BW, '  $ echo "テスト文字列" | curl -d @- clilap.org/regex/{パターン}', nc),
+                 '',
+                 cc(DC, '  クエリパラメータ:', nc),
+                 hint('flags=i       — 大文字小文字無視 (ignorecase)', nc),
+                 hint('flags=m       — 複数行モード (multiline)', nc),
+                 hint('flags=s       — . が改行にもマッチ (dotall)', nc),
+                 hint('flags=x       — 拡張モード (verbose)', nc),
+                 hint('flags=im      — 複数フラグ組み合わせ可', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    text = body_bytes.decode('utf-8', errors='replace') if body_bytes else ''
+
+    flag_str = ''.join(qs.get('flags', [''])).lower()
+    flags = 0
+    if 'i' in flag_str: flags |= re.IGNORECASE
+    if 'm' in flag_str: flags |= re.MULTILINE
+    if 's' in flag_str: flags |= re.DOTALL
+    if 'x' in flag_str: flags |= re.VERBOSE
+
+    try:
+        compiled = re.compile(pattern, flags)
+    except re.error as e:
+        lines = [sep(nc),
+                 cc(BR, '  エラー: 正規表現が無効です', nc), '',
+                 hint(f'パターン: {pattern}', nc),
+                 hint(f'エラー:   {e}', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    if not text:
+        lines = [sep(nc), cc(BC, '  正規表現パターン確認', nc), '',
+                 hint(f'パターン: {pattern}', nc),
+                 hint(f'フラグ:   {flag_str or "なし"}', nc), '',
+                 cc(D, '  テスト文字列を POST で送信してください:', nc),
+                 cc(BW, f'  $ echo "Hello World" | curl -d @- clilap.org/regex/{quote(pattern)}', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    matches = list(compiled.finditer(text))
+    lines = [sep(nc), cc(BC, '  正規表現テスト結果', nc), '']
+    lines.append(hint(f'パターン: {pattern}', nc))
+    if flag_str:
+        lines.append(hint(f'フラグ:   {flag_str}', nc))
+    lines.append('')
+
+    if not matches:
+        lines.append(cc(BY, '  マッチなし', nc))
+    else:
+        lines.append(cc(BG, f'  マッチ数: {len(matches)}', nc))
+        lines.append('')
+        for i, m in enumerate(matches, 1):
+            lines.append(cc(BW, f'  [{i}] ', nc) + cc(C, repr(m.group(0)), nc))
+            lines.append(hint(f'位置: {m.start()}-{m.end()}', nc))
+            if m.groups():
+                for gi, g in enumerate(m.groups(), 1):
+                    lines.append(hint(f'グループ {gi}: {repr(g)}', nc))
+            if m.groupdict():
+                for name, val in m.groupdict().items():
+                    lines.append(hint(f'名前付きグループ {name}: {repr(val)}', nc))
+
+    lines.append(sep(nc))
+    return '\n'.join(lines) + '\n'
+
+
 def do_unicode_help(nc):
     lines = [sep(nc), cc(BC, '  Unicodeツール', nc), '',
              cc(BW, '  $ curl clilap.org/unicode/A', nc) + cc(D, '         — 文字情報', nc),
@@ -1186,6 +1255,9 @@ class Handler(BaseHTTPRequestHandler):
         elif service == 'diff':
             ct = self.headers.get('Content-Type', '')
             respond(do_diff(body_bytes, ct, nc))
+        elif service == 'regex':
+            pattern = unquote('/'.join(parts[1:]))
+            respond(do_regex(pattern, body_bytes, qs, nc))
         elif service == 'unicode':
             sub = args[0] if args else ''
             if sub == 'inspect':

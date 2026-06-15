@@ -405,6 +405,27 @@ Fancy styles: `bold` `italic` `bolditalic` `script` `boldscript` `gothic` `doubl
 
 ---
 
+### 🔍 Regex Tester — `/regex`
+
+Test regular expressions using Python's `re` engine. Shows match count, positions, and capture groups.
+
+```bash
+curl clilap.org/regex/\d+                                      # pattern info
+echo "abc 123 def 456" | curl -d @- clilap.org/regex/\\d+     # match against text
+echo "Hello World" | curl -d @- "clilap.org/regex/hello?flags=i"
+echo "2024-01-15" | curl -d @- "clilap.org/regex/(\d{4})-(\d{2})-(\d{2})"
+```
+
+| Flag | Effect |
+|------|--------|
+| `?flags=i` | Case-insensitive |
+| `?flags=m` | Multiline (`^`/`$` match line boundaries) |
+| `?flags=s` | Dotall (`.` matches newlines) |
+| `?flags=x` | Verbose (whitespace ignored) |
+| `?flags=im` | Combine flags |
+
+---
+
 ## Common Options
 
 | Option | Effect          |
