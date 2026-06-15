@@ -1,9 +1,16 @@
 # clilap
 
+[![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
+[![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
+[![Issues](https://img.shields.io/github/issues/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/commits)
+[![Repo Size](https://img.shields.io/github/repo-size/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Node.js](https://img.shields.io/badge/node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![curl](https://img.shields.io/badge/試す-curl%20clilap.org-4ec9b0?style=flat-square)](https://clilap.org)
 
-`curl` でアクセスできる開発者向け CLI ツール集。インストール不要。
+インストール不要で `curl` から使える開発者向けツール集。天気予報・コマンドチートシート・GitHub情報・DNS・ハッシュ計算など、ターミナルから直接アクセスできる。
 
 ```
 curl clilap.org
@@ -97,7 +104,7 @@ echo "hello" | curl -d @- clilap.org/hash/sha256
 UNIXタイムスタンプと日時を相互変換。
 
 ```bash
-curl clilap.org/epoch                # 現在時刻
+curl clilap.org/epoch                # 現在時刻（UTC + ローカル時刻）
 curl clilap.org/epoch/1700000000     # UNIXタイム → 日時
 curl clilap.org/epoch/2024-01-01     # 日付 → UNIXタイム
 ```
