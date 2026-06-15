@@ -1203,8 +1203,9 @@ def do_regex(pattern, body_bytes, qs, nc):
         except Exception:
             pass
 
-        lines += [cc(D, '  テスト文字列を POST で送信してください:', nc),
+        lines += [cc(D, '  テスト文字列を送信してマッチ確認:', nc),
                   cc(BW, f'  $ echo "Hello World" | curl -d @- clilap.org/regex/{quote(pattern)}', nc),
+                  cc(BW, f'  $ curl -T pattern.txt "clilap.org/regex/?text=Hello+World"', nc),
                   sep(nc)]
         return '\n'.join(lines) + '\n'
 
@@ -1275,7 +1276,7 @@ class Handler(BaseHTTPRequestHandler):
         service = parts[0] if parts else ''
         args    = [unquote(p) for p in parts[1:]]
 
-        body_bytes = self._read_body() if method == 'POST' else b''
+        body_bytes = self._read_body() if method in ('POST', 'PUT') else b''
 
         def respond(text):
             if browser:
@@ -1319,8 +1320,16 @@ class Handler(BaseHTTPRequestHandler):
             ct = self.headers.get('Content-Type', '')
             respond(do_diff(body_bytes, ct, nc))
         elif service == 'regex':
-            pattern = unquote('/'.join(parts[1:]))
-            respond(do_regex(pattern, body_bytes, qs, nc))
+            if method == 'PUT' and body_bytes:
+                # curl -T pattern.txt clilap.org/regex/
+                # curl -T pattern.txt "clilap.org/regex/?text=hello+world"
+                pattern = body_bytes.decode('utf-8', errors='replace').strip()
+                text_param = qs.get('text', [''])[0]
+                test_text = text_param.encode('utf-8') if text_param else b''
+                respond(do_regex(pattern, test_text, qs, nc))
+            else:
+                pattern = unquote('/'.join(parts[1:]))
+                respond(do_regex(pattern, body_bytes, qs, nc))
         elif service == 'unicode':
             sub = args[0] if args else ''
             if sub == 'inspect':
@@ -1344,6 +1353,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try: self._dispatch('POST')
+        except Exception: self._send('Internal error\n', status=500)
+
+    def do_PUT(self):
+        try: self._dispatch('PUT')
         except Exception: self._send('Internal error\n', status=500)
 
 
