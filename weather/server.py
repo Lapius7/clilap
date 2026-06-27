@@ -470,6 +470,77 @@ def render_error(msg, no_color, lang='ja'):
     SEP = c(DC, '═' * 60)
     return f"{SEP}\n  {c(BR, L['error'])} {msg}\n  {c(DC, L['usage'])}\n{SEP}\n"
 
+
+# ── /sunrise ─────────────────────────────────────────────────────────────────
+
+def render_sunrise(location_name, lat, lon, data, no_color):
+    def c(code, text): return text if no_color else code + text + R
+    SEP = c(DC, '═' * 60)
+    daily = data.get('daily', {})
+    dates    = daily.get('time', [])
+    sunrises = daily.get('sunrise', [])
+    sunsets  = daily.get('sunset', [])
+
+    lines = [SEP, f'  {c(BC, location_name)}', '']
+    for i in range(min(4, len(dates))):
+        date = dates[i]
+        sr = sunrises[i].split('T')[1] if i < len(sunrises) else '?'
+        ss = sunsets[i].split('T')[1] if i < len(sunsets) else '?'
+        try:
+            t1 = datetime.strptime(sr, '%H:%M')
+            t2 = datetime.strptime(ss, '%H:%M')
+            daylight = (t2 - t1)
+            h, m = divmod(daylight.seconds // 60, 60)
+            daylight_str = f'{h}時間{m}分'
+        except ValueError:
+            daylight_str = '?'
+        lines.append(f'  {c(D, date)}')
+        lines.append(f'    {c(BY, "日の出")} {c(BW, sr)}   {c(C, "日の入")} {c(BW, ss)}   {c(DC, "昼の長さ")} {c(D, daylight_str)}')
+    lines += ['', SEP, f'  {c(DC, "/sunrise/Tokyo")}  {c(D, "— 都市名を指定")}', SEP]
+    return '\n'.join(lines) + '\n'
+
+
+# ── /moon ────────────────────────────────────────────────────────────────────
+
+_MOON_PHASES_JA = [
+    (0.0,  '新月'), (0.125, '三日月'), (0.25, '上弦の月'), (0.375, '満ちゆく月'),
+    (0.5,  '満月'), (0.625, '欠けゆく月'), (0.75, '下弦の月'), (0.875, '有明月'),
+]
+_MOON_ART = ['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘']
+
+def _moon_phase(dt):
+    """Approximate moon phase (0=new, 0.5=full) via a known new-moon epoch."""
+    known_new_moon = datetime(2000, 1, 6, 18, 14)
+    synodic = 29.530588853
+    days = (dt - known_new_moon).total_seconds() / 86400.0
+    phase = (days % synodic) / synodic
+    return phase
+
+def render_moon(no_color, date_str=None):
+    def c(code, text): return text if no_color else code + text + R
+    SEP = c(DC, '═' * 60)
+    now = datetime.now()
+    if date_str:
+        try:
+            now = datetime.strptime(date_str, '%Y-%m-%d')
+        except ValueError:
+            pass
+    phase = _moon_phase(now)
+    idx = int(phase * 8) % 8
+    art = _MOON_ART[idx]
+    name = _MOON_PHASES_JA[idx][1]
+    age_days = phase * 29.530588853
+
+    lines = [SEP, f'  {c(BC, "月相")}  {c(D, now.strftime("%Y-%m-%d"))}', '',
+             f'  {art}  {c(BW, name)}',
+             f'  {c(DC, "月齢")} {c(D, f"{age_days:.1f}日")}',
+             f'  {c(DC, "満月までの目安")} {c(D, f"{(0.5 - phase) % 1.0 * 29.530588853:.1f}日")}',
+             '', SEP,
+             f'  {c(DC, "/moon")}            {c(D, "— 今日の月相")}',
+             f'  {c(DC, "/moon/2026-01-01")} {c(D, "— 指定日の月相")}',
+             SEP]
+    return '\n'.join(lines) + '\n'
+
 # ---------- ANSI-to-HTML ----------
 _A2H = {
     '1':    'font-weight:bold',
@@ -689,6 +760,36 @@ class Handler(BaseHTTPRequestHandler):
                 send(html_wrap(render_help(False, lang), 'weather - Clilap'), html=True)
             else:
                 send(render_help(no_color, lang))
+            return
+
+        if path == '/moon' or path.startswith('/moon/'):
+            date_arg = path[len('/moon/'):] if path.startswith('/moon/') else None
+            if browser:
+                send(html_wrap(render_moon(False, date_arg), 'moon - Clilap'), html=True)
+            else:
+                send(render_moon(no_color, date_arg))
+            return
+
+        if path == '/sunrise' or path.startswith('/sunrise/'):
+            sr_location = unquote(path[len('/sunrise/'):]).replace('/', ' ').strip() if path.startswith('/sunrise/') else ''
+            if not sr_location:
+                client_ip = (self.headers.get('X-Real-IP') or
+                             (self.headers.get('X-Forwarded-For') or '').split(',')[0].strip())
+                lat, lon, city = geocode_ip(client_ip)
+            else:
+                lat, lon, city = geocode(sr_location)
+            if lat is None:
+                err = render_error(f'Location not found: {sr_location}', no_color, lang)
+                send(err)
+                return
+            try:
+                data = get_weather(lat, lon)
+                if browser:
+                    send(html_wrap(render_sunrise(city, lat, lon, data, False), 'sunrise - Clilap'), html=True)
+                else:
+                    send(render_sunrise(city, lat, lon, data, no_color))
+            except Exception:
+                send(render_error('Service temporarily unavailable.', no_color, lang))
             return
 
         if path == '/auto':

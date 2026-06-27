@@ -1304,6 +1304,359 @@ def do_unicode_help(nc):
     return '\n'.join(lines) + '\n'
 
 
+# ── /jwt ──────────────────────────────────────────────────────────────────────
+
+def _b64url_decode(s):
+    s = s.replace('-', '+').replace('_', '/')
+    padding = (4 - len(s) % 4) % 4
+    return base64.b64decode(s + '=' * padding)
+
+def do_jwt(token, nc):
+    if not token:
+        lines = [sep(nc), cc(BC, '  JWT デコーダー', nc), '',
+                 cc(D, '  JWTのヘッダ・ペイロードをデコードします (署名検証は行いません)', nc),
+                 '',
+                 cc(BW, '  $ curl clilap.org/jwt/{token}', nc),
+                 cc(BW, '  $ echo "{token}" | curl -d @- clilap.org/jwt', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    parts = token.strip().split('.')
+    if len(parts) != 3:
+        lines = [sep(nc), cc(BR, '  不正なJWT形式 (header.payload.signature の3部構成が必要)', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    try:
+        header_raw = _b64url_decode(parts[0])
+        payload_raw = _b64url_decode(parts[1])
+        header = json.loads(header_raw)
+        payload = json.loads(payload_raw)
+    except Exception as e:
+        lines = [sep(nc), cc(BR, f'  デコード失敗: {e}', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    lines = [sep(nc), cc(BC, '  JWT デコード結果', nc), '',
+             cc(BY, '  ヘッダ', nc)]
+    for line in json.dumps(header, indent=2, ensure_ascii=False).splitlines():
+        lines.append('  ' + cc(D, line, nc))
+    lines += ['', cc(BY, '  ペイロード', nc)]
+    for line in json.dumps(payload, indent=2, ensure_ascii=False).splitlines():
+        lines.append('  ' + cc(BG, line, nc))
+
+    for claim, label in [('exp', '有効期限'), ('iat', '発行日時'), ('nbf', '有効開始')]:
+        if claim in payload:
+            try:
+                ts = datetime.fromtimestamp(payload[claim], tz=timezone.utc)
+                expired = claim == 'exp' and ts < datetime.now(timezone.utc)
+                tag = cc(BR, f'{ts.strftime("%Y-%m-%d %H:%M:%S")} UTC (期限切れ)', nc) if expired \
+                      else cc(D, f'{ts.strftime("%Y-%m-%d %H:%M:%S")} UTC', nc)
+                lines.append('')
+                lines.append(cc(DC, f'  {label} ({claim})  ', nc) + tag)
+            except (ValueError, OSError, OverflowError):
+                pass
+
+    lines += ['', sep(nc),
+              cc(BY, '  ⚠ 署名検証は行っていません。信頼できないトークンの内容を鵜呑みにしないでください。', nc),
+              sep(nc)]
+    return '\n'.join(lines) + '\n'
+
+
+# ── /morse ────────────────────────────────────────────────────────────────────
+
+_MORSE_MAP = {
+    'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.',
+    'H':'....','I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.',
+    'O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-',
+    'V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..',
+    '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
+    '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
+    '.':'.-.-.-',',':'--..--','?':'..--..',"'":'.----.','!':'-.-.--',
+    '/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',':':'---...',
+    ';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-',
+    '"':'.-..-.','$':'...-..-','@':'.--.-.',
+}
+_MORSE_REV = {v: k for k, v in _MORSE_MAP.items()}
+
+def do_morse(text, nc):
+    if not text:
+        lines = [sep(nc), cc(BC, '  モールス信号変換', nc), '',
+                 cc(D, '  テキスト ⇄ モールス信号 を相互変換します', nc),
+                 '',
+                 cc(BW, '  $ curl clilap.org/morse/encode/SOS', nc),
+                 cc(BW, '  $ curl clilap.org/morse/decode/...---...', nc),
+                 cc(BW, '  $ echo "Hello" | curl -d @- clilap.org/morse/encode', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+    return text
+
+def do_morse_encode(text, nc):
+    if not text:
+        return do_morse('', nc)
+    words = text.upper().split(' ')
+    morse_words = []
+    for word in words:
+        letters = [_MORSE_MAP.get(ch, '') for ch in word]
+        morse_words.append(' '.join(l for l in letters if l))
+    result = ' / '.join(morse_words)
+    lines = [sep(nc), cc(BC, '  モールス信号エンコード', nc), '',
+             cc(DC, '  入力  ', nc) + cc(BW, text[:200], nc),
+             cc(DC, '  結果  ', nc) + cc(BG, result[:500], nc),
+             sep(nc),
+             hint('/morse/decode/{モールス信号}  — 逆変換', nc)]
+    return '\n'.join(lines) + '\n'
+
+def do_morse_decode(code, nc):
+    if not code:
+        return do_morse('', nc)
+    normalized = code.strip().replace('_', ' ')
+    words = normalized.split('/')
+    decoded_words = []
+    for word in words:
+        letters = word.strip().split(' ')
+        chars = [_MORSE_REV.get(l, '') for l in letters if l]
+        decoded_words.append(''.join(chars))
+    result = ' '.join(decoded_words)
+    lines = [sep(nc), cc(BC, '  モールス信号デコード', nc), '',
+             cc(DC, '  入力  ', nc) + cc(BW, code[:200], nc),
+             cc(DC, '  結果  ', nc) + cc(BG, result[:500], nc),
+             sep(nc),
+             hint('/morse/decode/..._---_...  — 文字間は_(アンダースコア)で区切る', nc),
+             hint('/morse/encode/{テキスト}  — 逆変換', nc)]
+    return '\n'.join(lines) + '\n'
+
+
+# ── /convert (CSV/JSON/YAML/TOML/INI) ───────────────────────────────────────────
+
+def _mini_yaml_load(text):
+    """Minimal YAML subset parser: nested mappings, lists, and scalars only."""
+    lines = [l for l in text.splitlines() if l.strip() and not l.strip().startswith('#')]
+
+    def parse_scalar(s):
+        s = s.strip()
+        if s in ('null', '~', ''): return None
+        if s in ('true', 'True'): return True
+        if s in ('false', 'False'): return False
+        if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
+            return s[1:-1]
+        try: return int(s)
+        except ValueError: pass
+        try: return float(s)
+        except ValueError: pass
+        if s.startswith('[') and s.endswith(']'):
+            inner = s[1:-1].strip()
+            return [parse_scalar(x) for x in inner.split(',')] if inner else []
+        return s
+
+    def indent_of(line):
+        return len(line) - len(line.lstrip(' '))
+
+    def parse_block(idx, base_indent):
+        result = None
+        i = idx
+        while i < len(lines):
+            line = lines[i]
+            ind = indent_of(line)
+            if ind < base_indent:
+                break
+            if ind > base_indent:
+                i += 1
+                continue
+            content = line.strip()
+            if content.startswith('- '):
+                if result is None: result = []
+                item_content = content[2:]
+                if ':' in item_content and not item_content.startswith(('"', "'")):
+                    key, _, val = item_content.partition(':')
+                    sub = {key.strip(): parse_scalar(val)} if val.strip() else {}
+                    i += 1
+                    if not val.strip():
+                        sub_result, i = parse_block(i, ind + 2)
+                        if sub_result: sub = sub_result
+                    result.append(sub)
+                else:
+                    result.append(parse_scalar(item_content))
+                    i += 1
+            elif ':' in content:
+                if result is None: result = {}
+                key, _, val = content.partition(':')
+                key = key.strip()
+                val = val.strip()
+                if val:
+                    result[key] = parse_scalar(val)
+                    i += 1
+                else:
+                    i += 1
+                    sub_result, i = parse_block(i, ind + 2)
+                    result[key] = sub_result
+            else:
+                i += 1
+        return result, i
+
+    result, _ = parse_block(0, 0)
+    return result
+
+def _to_yaml(obj, indent=0):
+    pad = '  ' * indent
+    lines = []
+    if isinstance(obj, dict):
+        if not obj: return [pad + '{}']
+        for k, v in obj.items():
+            if isinstance(v, (dict, list)) and v:
+                lines.append(f'{pad}{k}:')
+                lines.extend(_to_yaml(v, indent + 1))
+            else:
+                lines.append(f'{pad}{k}: {_yaml_scalar(v)}')
+    elif isinstance(obj, list):
+        if not obj: return [pad + '[]']
+        for item in obj:
+            if isinstance(item, (dict, list)) and item:
+                sub = _to_yaml(item, indent + 1)
+                lines.append(f'{pad}- {sub[0].strip()}')
+                lines.extend(sub[1:])
+            else:
+                lines.append(f'{pad}- {_yaml_scalar(item)}')
+    else:
+        lines.append(f'{pad}{_yaml_scalar(obj)}')
+    return lines
+
+def _yaml_scalar(v):
+    if v is None: return 'null'
+    if isinstance(v, bool): return 'true' if v else 'false'
+    if isinstance(v, str):
+        if v == '' or v.strip() != v or any(c in v for c in ':#[]{}'):
+            return f'"{v}"'
+        return v
+    return str(v)
+
+def _to_ini(obj):
+    lines = []
+    flat = {}
+    sections = {}
+    for k, v in (obj or {}).items():
+        if isinstance(v, dict):
+            sections[k] = v
+        else:
+            flat[k] = v
+    if flat:
+        for k, v in flat.items():
+            lines.append(f'{k} = {v}')
+        lines.append('')
+    for section, kv in sections.items():
+        lines.append(f'[{section}]')
+        for k, v in kv.items():
+            lines.append(f'{k} = {v}')
+        lines.append('')
+    return '\n'.join(lines).rstrip() + '\n'
+
+def _from_ini(text):
+    import configparser
+    cp = configparser.ConfigParser()
+    cp.read_string(text)
+    result = {}
+    if cp.defaults():
+        result.update(dict(cp.defaults()))
+    for section in cp.sections():
+        result[section] = dict(cp.items(section))
+    return result
+
+def _to_csv(obj):
+    import csv, io as _io
+    if isinstance(obj, dict):
+        obj = [obj]
+    if not isinstance(obj, list) or not obj or not isinstance(obj[0], dict):
+        raise ValueError('CSV変換には オブジェクトの配列 ([{...}, {...}]) が必要です')
+    fieldnames = list(obj[0].keys())
+    buf = _io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=fieldnames)
+    writer.writeheader()
+    for row in obj:
+        writer.writerow(row)
+    return buf.getvalue()
+
+def _from_csv(text):
+    import csv, io as _io
+    reader = csv.DictReader(_io.StringIO(text))
+    return [dict(row) for row in reader]
+
+_CONVERT_FORMATS = ('json', 'yaml', 'toml', 'ini', 'csv')
+
+def do_convert(from_fmt, to_fmt, body_bytes, nc):
+    if not body_bytes or from_fmt not in _CONVERT_FORMATS or to_fmt not in _CONVERT_FORMATS:
+        lines = [sep(nc), cc(BC, '  フォーマット変換', nc), '',
+                 cc(D, '  対応フォーマット: json yaml toml ini csv', nc),
+                 '',
+                 cc(BW, '  $ curl --data-binary @data.json clilap.org/convert/json/yaml', nc),
+                 cc(BW, '  $ curl --data-binary @data.yaml clilap.org/convert/yaml/json', nc),
+                 cc(BW, '  $ curl --data-binary @data.csv  clilap.org/convert/csv/json', nc),
+                 cc(BW, '  $ curl --data-binary @data.toml clilap.org/convert/toml/json', nc),
+                 cc(BW, '  $ curl --data-binary @data.ini  clilap.org/convert/ini/json', nc),
+                 '',
+                 cc(DC, '  注: -d は改行/インデントを壊すため --data-binary を使用してください', nc),
+                 cc(DC, '  注: YAML対応は簡易サブセット (ネスト/リスト/スカラー値のみ)', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    text = body_bytes.decode('utf-8', errors='replace')
+
+    try:
+        if from_fmt == 'json':
+            data = json.loads(text)
+        elif from_fmt == 'yaml':
+            data = _mini_yaml_load(text)
+        elif from_fmt == 'toml':
+            import tomllib
+            data = tomllib.loads(text)
+        elif from_fmt == 'ini':
+            data = _from_ini(text)
+        elif from_fmt == 'csv':
+            data = _from_csv(text)
+    except Exception as e:
+        lines = [sep(nc), cc(BR, f'  {from_fmt.upper()} パース失敗: {e}', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    try:
+        if to_fmt == 'json':
+            result = json.dumps(data, indent=2, ensure_ascii=False)
+        elif to_fmt == 'yaml':
+            result = '\n'.join(_to_yaml(data))
+        elif to_fmt == 'toml':
+            result = _to_toml_simple(data)
+        elif to_fmt == 'ini':
+            result = _to_ini(data)
+        elif to_fmt == 'csv':
+            result = _to_csv(data)
+    except Exception as e:
+        lines = [sep(nc), cc(BR, f'  {to_fmt.upper()} 変換失敗: {e}', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    lines = [sep(nc), cc(BC, f'  変換: {from_fmt.upper()} → {to_fmt.upper()}', nc), '']
+    for line in result.splitlines()[:500]:
+        lines.append('  ' + cc(BG, line, nc))
+    lines += ['', sep(nc)]
+    return '\n'.join(lines) + '\n'
+
+def _to_toml_simple(obj):
+    """Minimal dict -> TOML serializer (flat values + one level of tables)."""
+    lines = []
+    flat = {k: v for k, v in (obj or {}).items() if not isinstance(v, dict)}
+    tables = {k: v for k, v in (obj or {}).items() if isinstance(v, dict)}
+    for k, v in flat.items():
+        lines.append(f'{k} = {_toml_value(v)}')
+    for k, v in tables.items():
+        lines.append('')
+        lines.append(f'[{k}]')
+        for kk, vv in v.items():
+            lines.append(f'{kk} = {_toml_value(vv)}')
+    return '\n'.join(lines) + '\n'
+
+def _toml_value(v):
+    if isinstance(v, bool): return 'true' if v else 'false'
+    if isinstance(v, str): return json.dumps(v)
+    if isinstance(v, list): return '[' + ', '.join(_toml_value(x) for x in v) + ']'
+    if v is None: return '""'
+    return str(v)
+
+
 # ── Handler ───────────────────────────────────────────────────────────────────
 
 class Handler(BaseHTTPRequestHandler):
@@ -1400,6 +1753,23 @@ class Handler(BaseHTTPRequestHandler):
                 respond(do_unicode_char(sub, nc))
             else:
                 respond(do_unicode_help(nc))
+        elif service == 'jwt':
+            token = args[0] if args else body_bytes.decode('utf-8', errors='replace').strip()
+            respond(do_jwt(token, nc))
+        elif service == 'morse':
+            sub = args[0] if args else ''
+            if sub == 'encode':
+                text = body_bytes.decode('utf-8', errors='replace').strip() if body_bytes else unquote('/'.join(parts[2:]))
+                respond(do_morse_encode(text, nc))
+            elif sub == 'decode':
+                code = body_bytes.decode('utf-8', errors='replace').strip() if body_bytes else unquote('/'.join(parts[2:]))
+                respond(do_morse_decode(code, nc))
+            else:
+                respond(do_morse('', nc))
+        elif service == 'convert':
+            from_fmt = args[0] if args else ''
+            to_fmt   = args[1] if len(args) > 1 else ''
+            respond(do_convert(from_fmt, to_fmt, body_bytes, nc))
         else:
             self._send('Not found\n', status=404)
 
