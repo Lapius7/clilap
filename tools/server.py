@@ -287,8 +287,8 @@ def do_cal(args, nc):
 
     def render_month(y, m):
         cal = cal_obj.monthdayscalendar(y, m)
-        title = f'{y}年{m}月'
-        header = cc(BC, _vcenter(title, 20), nc)
+        title = f'{y}-{m:02d}'
+        header = cc(BC, title.center(20), nc)
         dow_row = ' '.join(
             cc(Y, d, nc) if i == 0 or i == 6 else cc(DC, d, nc)
             for i, d in enumerate(DOW)
