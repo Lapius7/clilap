@@ -296,16 +296,26 @@ def do_time(args, nc):
                   hint('/time/America/Chicago    — IANAタイムゾーン名', nc)]
         return '\n'.join(lines) + '\n'
 
-    city_names = ' '.join(args).split('/')
-    results = []
-    for city in city_names:
-        city = city.strip()
-        if not city: continue
-        tz, err = _resolve_tz(city)
-        if err:
-            results.append((city, None, err))
+    # 単一の複合IANA名 (例: America/Chicago) を優先的に試す
+    if len(args) > 1:
+        combined = '/'.join(args)
+        tz, err = _resolve_tz(combined)
+        if not err:
+            results = [(combined, tz, None)]
         else:
-            results.append((city, tz, None))
+            results = []
+    else:
+        results = []
+
+    if not results:
+        city_names = [a.strip() for a in args if a.strip()]
+        results = []
+        for city in city_names:
+            tz, err = _resolve_tz(city)
+            if err:
+                results.append((city, None, err))
+            else:
+                results.append((city, tz, None))
 
     if len(results) == 1:
         city, tz, err = results[0]
