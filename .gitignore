@@ -16,7 +16,6 @@ npm-debug.log*
 
 # Logs
 *.log
-log/
 logs/
 
 # ipinfo GeoIP database (large binary data, install via npm)
@@ -28,6 +27,13 @@ qrenco/log/
 
 # parrot node_modules
 parrot/node_modules/
+
+# dep: stored dependency analysis data
+dep/data/
+
+# log: stored stream data + venv (keep server.py)
+log/data/
+log/bin/ve/
 
 # Editor / OS
 .DS_Store
