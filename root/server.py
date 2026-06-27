@@ -129,6 +129,14 @@ def render_index(nc):
                 c(D,  '  $ git commit -m "msg"') + c(DC, '      # コミット'),
             ]
         ),
+        (
+            'clilap.org/dep -F file=@package.json',
+            [
+                c(DC, '  → 依存関係ツリーを解析しURLを発行'),
+                c(BC, '  curl:    ') + c(BW, 'curl dep.clilap.org/ab12cd'),
+                c(BC, '  browser: ') + c(C, 'https://dep.clilap.org/ab12cd'),
+            ]
+        ),
     ]
 
     services = [
@@ -141,7 +149,8 @@ def render_index(nc):
         '/ascii',     '/base',      '/urlencode',  '/urldecode',
         '/cal',       '/cron',      '/totp',       '/mock',
         '/gitignore', '/license',   '/json',       '/diff',
-        '/md',        '/unicode',   '/regex',
+        '/md',        '/unicode',   '/regex',      '/dep',
+        '/log',
     ]
     svc_cols = []
     for i in range(0, len(services), 4):
@@ -165,6 +174,9 @@ def render_index(nc):
         lines.extend(resp)
         lines.append('')
     lines += [
+        '  ' + c(BW, '$') + ' ' + c(C, 'tail -f app.log | curl -T - "$UPLOAD"'),
+        c(DC, '  → ログをリアルタイムでURL共有 (ANSI色保持、ブラウザでライブ表示)'),
+        '',
         div,
         f'  {c(D, "サービス一覧:")}  {c(DC, "詳細 → curl clilap.org/help")}',
         '',
@@ -195,7 +207,8 @@ def render_not_found(path, nc):
         c(BC, '    /ascii     /base      /urlencode /urldecode'),
         c(BC, '    /cal       /cron      /totp      /mock'),
         c(BC, '    /gitignore /license   /json      /diff'),
-        c(BC, '    /md        /unicode   /regex'),
+        c(BC, '    /md        /unicode   /regex     /dep'),
+        c(BC, '    /log'),
         '',
         c(DC, '  curl clilap.org/help') + c(D, '  for full documentation'),
         SEP,
@@ -645,6 +658,35 @@ def render_help(nc):
         '',
         note('フラグ: ?flags=i (大文字小文字無視)  ?flags=m (複数行)  ?flags=s (dotall)  ?flags=im (組み合わせ)'),
         note('使用エンジン: Python re  — グループ・名前付きグループに対応'),
+
+        h('/dep  📦 依存関係可視化'),
+        '',
+        sec('概要', 'package.jsonをアップロードして依存関係ツリーを解析・URLで共有します。'),
+        '',
+        ex('curl -F "file=@package.json" clilap.org/dep'),
+        ex('cat package.json | curl --data-binary @- clilap.org/dep'),
+        ex('curl dep.clilap.org/ab12cd            # ツリー表示'),
+        ex('curl dep.clilap.org/ab12cd/cycles      # 循環依存検出'),
+        ex('curl dep.clilap.org/ab12cd/heavy       # 巨大依存ランキング'),
+        ex('curl dep.clilap.org/ab12cd/licenses    # ライセンス検査'),
+        '',
+        note('発行されたURLはブラウザでも確認可能: https://dep.clilap.org/ab12cd'),
+        note('解析データは無期限保存されます。'),
+
+        h('/log  📡 リアルタイムログ共有'),
+        '',
+        sec('概要', 'コマンド出力やログファイルをリアルタイムでURL共有します。ANSI色は保持されます。'),
+        '',
+        note('2段階方式 (go run等、永久に終了しないプロセスでも確実にURLが手に入ります):'),
+        ex('RES=$(curl -s clilap.org/log/new)'),
+        ex('UPLOAD=$(echo "$RES" | grep ^upload: | awk \'{print $2}\')'),
+        ex('tail -f app.log | curl -T - "$UPLOAD"'),
+        ex('npm run dev 2>&1 | curl -T - "$UPLOAD"'),
+        '',
+        note('発行されたURLをブラウザで開くとリアルタイムに更新が表示されます: https://log.clilap.org/abc123'),
+        note('curlでも閲覧可能: curl log.clilap.org/abc123'),
+        note('オプション:'),
+        opt('?grep=pattern', '正規表現でログ行をフィルタ'),
 
         '',
         SEP,

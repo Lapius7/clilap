@@ -426,6 +426,42 @@ echo "2024-01-15" | curl -d @- "clilap.org/regex/(\d{4})-(\d{2})-(\d{2})"
 
 ---
 
+### 📦 Dependency Visualizer — `/dep`
+
+Upload a `package.json`, get a dependency tree at a shareable URL. Detects circular dependencies, ranks heaviest packages, and audits licenses.
+
+```bash
+curl -F "file=@package.json" clilap.org/dep
+cat package.json | curl --data-binary @- clilap.org/dep
+
+curl dep.clilap.org/ab12cd            # tree view
+curl dep.clilap.org/ab12cd/cycles     # circular dependency detection
+curl dep.clilap.org/ab12cd/heavy      # heaviest packages ranking
+curl dep.clilap.org/ab12cd/licenses   # license audit
+```
+
+Also viewable in a browser: `https://dep.clilap.org/ab12cd`. Stored indefinitely.
+
+### 📡 Realtime Log Sharing — `/log`
+
+Stream any command output or log file to a shareable URL. ANSI colors are preserved. Two-step flow — get an upload token first, then stream to it (works even for processes that never exit, like long-running servers):
+
+```bash
+RES=$(curl -s clilap.org/log/new)
+UPLOAD=$(echo "$RES" | grep ^upload: | awk '{print $2}')
+tail -f app.log | curl -T - "$UPLOAD"
+npm run dev 2>&1 | curl -T - "$UPLOAD"
+```
+
+```bash
+curl log.clilap.org/abc123                  # plain text
+curl "log.clilap.org/abc123?grep=ERROR"     # filter by regex
+```
+
+Open `https://log.clilap.org/abc123` in a browser for a realtime live-updating view (WebSocket-backed, ANSI rendered as color).
+
+---
+
 ## Common Options
 
 | Option | Effect          |

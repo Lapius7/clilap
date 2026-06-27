@@ -400,6 +400,42 @@ echo "2024-01-15" | curl -d @- "clilap.org/regex/(\d{4})-(\d{2})-(\d{2})"
 
 ---
 
+### 📦 依存関係可視化 — `/dep`
+
+`package.json` をアップロードすると依存関係ツリーを解析し、共有可能なURLを発行します。循環依存検出・巨大依存ランキング・ライセンス検査にも対応。
+
+```bash
+curl -F "file=@package.json" clilap.org/dep
+cat package.json | curl --data-binary @- clilap.org/dep
+
+curl dep.clilap.org/ab12cd            # ツリー表示
+curl dep.clilap.org/ab12cd/cycles     # 循環依存検出
+curl dep.clilap.org/ab12cd/heavy      # 巨大依存ランキング
+curl dep.clilap.org/ab12cd/licenses   # ライセンス検査
+```
+
+ブラウザでも確認可能: `https://dep.clilap.org/ab12cd`。解析データは無期限保存されます。
+
+### 📡 リアルタイムログ共有 — `/log`
+
+コマンド出力やログファイルをリアルタイムでURL共有します。ANSI色はそのまま保持されます。2段階方式 — 先にアップロード用トークンを取得し、そこへストリームします（go run等、永久に終了しないプロセスでも確実にURLが手に入ります）:
+
+```bash
+RES=$(curl -s clilap.org/log/new)
+UPLOAD=$(echo "$RES" | grep ^upload: | awk '{print $2}')
+tail -f app.log | curl -T - "$UPLOAD"
+npm run dev 2>&1 | curl -T - "$UPLOAD"
+```
+
+```bash
+curl log.clilap.org/abc123                  # テキスト表示
+curl "log.clilap.org/abc123?grep=ERROR"     # 正規表現でフィルタ
+```
+
+ブラウザで `https://log.clilap.org/abc123` を開くとリアルタイムに更新が表示されます（WebSocket配信、ANSI色付き）。
+
+---
+
 ## 共通オプション
 
 | オプション | 効果 |
