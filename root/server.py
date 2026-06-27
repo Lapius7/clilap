@@ -526,12 +526,15 @@ def render_help(nc):
 
         h('/base  🔢 進数変換'),
         '',
-        sec('概要', '2進数・8進数・10進数・16進数を相互変換します。'),
+        sec('概要', '2〜36進数を相互変換します。'),
         '',
-        ex('curl clilap.org/base/10/255           # 10進 → 全進数'),
-        ex('curl clilap.org/base/16/ff            # 16進 → 全進数'),
+        ex('curl clilap.org/base/10/255           # 10進 → 主要進数(2,8,16,36)'),
+        ex('curl clilap.org/base/16/ff            # 16進 → 主要進数'),
         ex('curl clilap.org/base/10/2/255         # 10進 → 2進'),
         ex('curl clilap.org/base/2/10/11111111    # 2進 → 10進'),
+        ex('curl clilap.org/base/10/255?all       # 2〜36進数 全件表示'),
+        '',
+        note('対応進数: 2〜36'),
 
         h('/urlencode  /urldecode  🔗 URLエンコード'),
         '',

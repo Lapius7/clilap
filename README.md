@@ -281,12 +281,13 @@ curl "clilap.org/ascii/Hi?font=slant"
 
 ### 🔢 Base Converter — `/base`
 
-Convert between binary, octal, decimal, and hexadecimal.
+Convert between any base from 2 to 36.
 
 ```bash
-curl clilap.org/base/10/255           # decimal → all
-curl clilap.org/base/16/ff            # hex → all
+curl clilap.org/base/10/255           # decimal → common bases (2,8,16,36)
+curl clilap.org/base/16/ff            # hex → common bases
 curl clilap.org/base/10/2/255         # decimal → binary
+curl clilap.org/base/10/255?all       # decimal → all bases 2-36
 ```
 
 ### 🔗 URL Encode/Decode — `/urlencode` `/urldecode`
