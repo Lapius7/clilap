@@ -281,7 +281,7 @@ def do_cal(args, nc):
     except ValueError:
         pass
 
-    DOW = ['日', '月', '火', '水', '木', '金', '土']
+    DOW = [' S', ' M', ' T', ' W', ' T', ' F', ' S']
     today = (now.year, now.month, now.day)
     cal_obj = calendar.Calendar(firstweekday=6)  # 6 = Sunday
 
