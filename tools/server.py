@@ -144,7 +144,23 @@ def do_password(args, qs, nc):
 
 # ── /base ────────────────────────────────────────────────────────────────────
 
-def do_base(args, nc):
+_BASE_DIGITS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+def _int_to_base(n, base):
+    if n == 0:
+        return '0'
+    neg = n < 0
+    n = abs(n)
+    digits = []
+    while n:
+        digits.append(_BASE_DIGITS[n % base])
+        n //= base
+    return ('-' if neg else '') + ''.join(reversed(digits))
+
+_COMMON_BASES = [2, 8, 10, 16]
+_ALL_BASES = list(range(2, 37))
+
+def do_base(args, qs, nc):
     if len(args) < 2:
         lines = [sep(nc),
                  cc(BC, '  進数変換', nc),
@@ -156,17 +172,23 @@ def do_base(args, nc):
                  cc(BW, '  $ curl clilap.org/base/16/ff', nc),
                  cc(BW, '  $ curl clilap.org/base/2/10/1010', nc),
                  cc(BW, '  $ curl clilap.org/base/10/2/255', nc),
+                 cc(BW, '  $ curl clilap.org/base/10/255?all   # 2〜36進数 全件', nc),
                  '',
-                 cc(DC, '  対応進数: 2 8 10 16', nc),
+                 cc(DC, '  対応進数: 2〜36 (デフォルト表示は 2 8 10 16 36)', nc),
                  sep(nc)]
         return '\n'.join(lines) + '\n'
+
+    show_all = 'all' in qs
 
     try:
         if len(args) == 2:
             from_base = int(args[0])
             value_str = args[1].upper()
             decimal   = int(value_str, from_base)
-            targets   = [b for b in [2, 8, 10, 16] if b != from_base]
+            if show_all:
+                targets = [b for b in _ALL_BASES if b != from_base]
+            else:
+                targets = [b for b in (_COMMON_BASES + [36]) if b != from_base]
         else:
             from_base = int(args[0])
             to_base   = int(args[1])
@@ -174,14 +196,11 @@ def do_base(args, nc):
             decimal   = int(value_str, from_base)
             targets   = [to_base]
 
-        if from_base not in [2, 8, 10, 16]:
-            raise ValueError('対応進数: 2, 8, 10, 16')
-
-        def to_str(n, base):
-            if   base == 2:  return bin(n)[2:]
-            elif base == 8:  return oct(n)[2:]
-            elif base == 10: return str(n)
-            elif base == 16: return hex(n)[2:].upper()
+        if not (2 <= from_base <= 36):
+            raise ValueError('対応進数: 2〜36')
+        for t in targets:
+            if not (2 <= t <= 36):
+                raise ValueError('対応進数: 2〜36')
 
         prefix = {2:'0b', 8:'0o', 10:'', 16:'0x'}
         base_name = {2:'2進数', 8:'8進数', 10:'10進数', 16:'16進数'}
@@ -189,16 +208,18 @@ def do_base(args, nc):
         lines = [sep(nc),
                  cc(BC, '  進数変換', nc),
                  '',
-                 cc(DC, f'  入力  ', nc) + cc(BW, f'{prefix[from_base]}{value_str}', nc) +
-                 cc(D, f'  ({base_name[from_base]})', nc),
+                 cc(DC, f'  入力  ', nc) + cc(BW, f'{prefix.get(from_base, "")}{value_str}', nc) +
+                 cc(D, f'  ({base_name.get(from_base, f"{from_base}進数")})', nc),
                  '']
         for b in targets:
-            result = to_str(decimal, b)
-            lines.append(cc(DC, f'  {b}進数  ', nc) + cc(BG, f'{prefix[b]}{result}', nc))
+            result = _int_to_base(decimal, b)
+            label = base_name.get(b, f'{b}進数')
+            lines.append(cc(DC, f'  {label:<6}', nc) + cc(BG, f'{prefix.get(b, "")}{result}', nc))
         lines += [sep(nc),
-                  hint('/base/10/255           — 10進数から全進数に変換', nc),
-                  hint('/base/16/ff            — 16進数から全進数に変換', nc),
-                  hint('/base/10/2/255         — 10進数 → 2進数', nc)]
+                  hint('/base/10/255           — 10進数から主要進数に変換', nc),
+                  hint('/base/16/ff            — 16進数から主要進数に変換', nc),
+                  hint('/base/10/2/255         — 10進数 → 2進数', nc),
+                  hint('/base/10/255?all       — 2〜36進数 全件表示', nc)]
         return '\n'.join(lines) + '\n'
 
     except (ValueError, IndexError) as e:
@@ -232,6 +253,21 @@ def do_urldecode(text, nc):
 
 # ── /cal ─────────────────────────────────────────────────────────────────────
 
+def _disp_width(s):
+    plain = re.sub(r'\x1b\[[^m]*m', '', s)
+    w = 0
+    for ch in plain:
+        w += 2 if unicodedata.east_asian_width(ch) in ('W', 'F') else 1
+    return w
+
+def _vjust(s, width):
+    return s + ' ' * max(0, width - _disp_width(s))
+
+def _vcenter(s, width):
+    pad = max(0, width - _disp_width(s))
+    left = pad // 2
+    return ' ' * left + s + ' ' * (pad - left)
+
 def do_cal(args, nc):
     now = datetime.now()
     year = now.year
@@ -245,14 +281,18 @@ def do_cal(args, nc):
     except ValueError:
         pass
 
-    DOW = ['月', '火', '水', '木', '金', '土', '日']
+    DOW = ['日', '月', '火', '水', '木', '金', '土']
     today = (now.year, now.month, now.day)
+    cal_obj = calendar.Calendar(firstweekday=6)  # 6 = Sunday
 
     def render_month(y, m):
-        cal = calendar.monthcalendar(y, m)
+        cal = cal_obj.monthdayscalendar(y, m)
         title = f'{y}年{m}月'
-        header = cc(BC, title.center(18), nc)
-        dow_row = cc(DC, ' '.join(DOW), nc)
+        header = cc(BC, _vcenter(title, 20), nc)
+        dow_row = ' '.join(
+            cc(Y, d, nc) if i == 0 or i == 6 else cc(DC, d, nc)
+            for i, d in enumerate(DOW)
+        )
         rows = [header, dow_row]
         for week in cal:
             cells = []
@@ -261,7 +301,7 @@ def do_cal(args, nc):
                     cells.append('  ')
                 elif (y, m, day) == today:
                     cells.append(cc(BW, f'{day:2}', nc))
-                elif i >= 5:
+                elif i == 0 or i == 6:
                     cells.append(cc(Y, f'{day:2}', nc))
                 else:
                     cells.append(f'{day:2}')
@@ -280,7 +320,8 @@ def do_cal(args, nc):
             for i in range(max_rows):
                 row_parts = []
                 for mr in months_rows:
-                    row_parts.append((mr[i] if i < len(mr) else '').ljust(22))
+                    cell = mr[i] if i < len(mr) else ''
+                    row_parts.append(_vjust(cell, 20))
                 lines.append('  ' + '  '.join(row_parts))
             lines.append('')
 
@@ -1302,7 +1343,7 @@ class Handler(BaseHTTPRequestHandler):
         if service == 'password':
             respond(do_password(args, qs, nc))
         elif service == 'base':
-            respond(do_base(args, nc))
+            respond(do_base(args, qs, nc))
         elif service == 'urlencode':
             text = body_bytes.decode('utf-8', errors='replace') if body_bytes else unquote('/'.join(parts[1:]))
             respond(do_urlencode(text, nc))
