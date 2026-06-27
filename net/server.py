@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Net server for clilap.org — network utilities on port 3215."""
 
-import json, re, socket, ssl, struct, time
+import ipaddress, json, re, socket, ssl, struct, subprocess, time
 from datetime import datetime, timezone, timedelta
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs, unquote
@@ -824,6 +824,23 @@ def do_dnsmap(domain, nc):
     return '\n'.join(lines) + '\n'
 
 
+_PRIVATE_PREFIXES = [
+    '127.', '10.', '0.', '169.254.', '192.168.',
+    '172.16.', '172.17.', '172.18.', '172.19.', '172.20.', '172.21.',
+    '172.22.', '172.23.', '172.24.', '172.25.', '172.26.', '172.27.',
+    '172.28.', '172.29.', '172.30.', '172.31.',
+    '::1', 'fc', 'fd',
+]
+
+def is_private_host(host):
+    """SSRF guard: resolve host and check against private/loopback ranges."""
+    try:
+        resolved_ip = socket.gethostbyname(host)
+    except Exception:
+        return False
+    return any(resolved_ip.startswith(p) for p in _PRIVATE_PREFIXES)
+
+
 # ── /portcheck ────────────────────────────────────────────────────────────────
 
 _COMMON_PORTS = {
@@ -853,24 +870,9 @@ def do_portcheck(host, port_str, nc):
 
     service = _COMMON_PORTS.get(port, '不明')
 
-    # SSRF protection: block private/loopback ranges
-    try:
-        resolved_ip = socket.gethostbyname(host)
-        _private_blocks = [
-            ('127.', 8), ('10.', 8), ('0.', 8),
-            ('169.254.', 16), ('192.168.', 16),
-            ('172.16.', 12), ('172.17.', 12), ('172.18.', 12), ('172.19.', 12),
-            ('172.20.', 12), ('172.21.', 12), ('172.22.', 12), ('172.23.', 12),
-            ('172.24.', 12), ('172.25.', 12), ('172.26.', 12), ('172.27.', 12),
-            ('172.28.', 12), ('172.29.', 12), ('172.30.', 12), ('172.31.', 12),
-            ('::1', 0), ('fc', 0), ('fd', 0),
-        ]
-        for prefix, _ in _private_blocks:
-            if resolved_ip.startswith(prefix):
-                lines = [sep(nc), cc(BR, '  プライベートIPへのアクセスは禁止されています', nc), sep(nc)]
-                return '\n'.join(lines) + '\n'
-    except Exception:
-        pass
+    if is_private_host(host):
+        lines = [sep(nc), cc(BR, '  プライベートIPへのアクセスは禁止されています', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
 
     start = time.time()
     try:
@@ -941,6 +943,244 @@ def do_dns_all(domain, nc):
     return '\n'.join(lines) + '\n'
 
 
+# ── /cidr ─────────────────────────────────────────────────────────────────────
+
+def do_cidr(cidr_str, nc):
+    if not cidr_str:
+        lines = [sep(nc), cc(BC, '  CIDR計算', nc), '',
+                 cc(D, '  使い方: /cidr/{IPアドレス}/{プレフィックス長}', nc),
+                 cc(BW, '  $ curl clilap.org/cidr/192.168.1.0/24', nc),
+                 cc(BW, '  $ curl clilap.org/cidr/10.0.0.0/8', nc),
+                 cc(BW, '  $ curl clilap.org/cidr/2001:db8::/32', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    try:
+        net = ipaddress.ip_network(cidr_str, strict=False)
+    except ValueError as e:
+        lines = [sep(nc), cc(BR, f'  不正なCIDR表記: {e}', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    lines = [sep(nc), cc(BC, f'  CIDR計算: {cidr_str}', nc), '',
+             cc(DC, '  ネットワークアドレス  ', nc) + cc(BW, str(net.network_address), nc),
+             cc(DC, '  ブロードキャストアドレス', nc) + cc(BW, str(net.broadcast_address), nc),
+             cc(DC, '  サブネットマスク      ', nc) + cc(D, str(net.netmask), nc),
+             cc(DC, '  プレフィックス長      ', nc) + cc(D, f'/{net.prefixlen}', nc),
+             cc(DC, '  総アドレス数          ', nc) + cc(BG, str(net.num_addresses), nc)]
+
+    if net.version == 4:
+        usable = max(0, net.num_addresses - 2) if net.prefixlen < 31 else net.num_addresses
+        lines.append(cc(DC, '  利用可能ホスト数      ', nc) + cc(BG, str(usable), nc))
+        if net.prefixlen < 31:
+            hosts = list(net.hosts())
+            if hosts:
+                lines.append(cc(DC, '  最初のホスト          ', nc) + cc(D, str(hosts[0]), nc))
+                lines.append(cc(DC, '  最後のホスト          ', nc) + cc(D, str(hosts[-1]), nc))
+
+    lines.append(cc(DC, '  プライベートIP         ', nc) + (cc(BG, 'はい', nc) if net.is_private else cc(D, 'いいえ', nc)))
+    lines += [sep(nc),
+              hint('/cidr/192.168.1.0/24   — IPv4 CIDR', nc),
+              hint('/cidr/2001:db8::/32    — IPv6 CIDR', nc)]
+    return '\n'.join(lines) + '\n'
+
+
+# ── /asn ──────────────────────────────────────────────────────────────────────
+
+def do_asn(query, nc):
+    if not query:
+        lines = [sep(nc), cc(BC, '  ASN情報', nc), '',
+                 cc(D, '  使い方: /asn/{IPアドレス}', nc),
+                 cc(BW, '  $ curl clilap.org/asn/8.8.8.8', nc),
+                 cc(BW, '  $ curl clilap.org/asn/1.1.1.1', nc),
+                 '',
+                 cc(DC, '  Team Cymru の DNS-based lookup を使用', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    try:
+        ipaddress.ip_address(query)
+    except ValueError:
+        try:
+            query = socket.gethostbyname(query)
+        except Exception:
+            lines = [sep(nc), cc(BR, f'  名前解決に失敗: {query}', nc), sep(nc)]
+            return '\n'.join(lines) + '\n'
+
+    if is_private_host(query):
+        lines = [sep(nc), cc(BR, '  プライベートIPはASN情報を持ちません', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    if ':' in query:
+        lines = [sep(nc), cc(BR, '  IPv6のASN検索には現在対応していません', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    try:
+        rev = '.'.join(reversed(query.split('.'))) + '.origin.asn.cymru.com'
+        result = subprocess.run(['dig', '+short', 'TXT', rev], capture_output=True, text=True, timeout=5)
+        raw = result.stdout.strip().strip('"')
+        if not raw:
+            raise ValueError('no data')
+        fields = [f.strip() for f in raw.split('|')]
+        asn, prefix, cc_code, registry, alloc_date = (fields + [''] * 5)[:5]
+
+        asn_name_result = subprocess.run(
+            ['dig', '+short', 'TXT', f'AS{asn}.asn.cymru.com'],
+            capture_output=True, text=True, timeout=5)
+        name_raw = asn_name_result.stdout.strip().strip('"')
+        name_fields = [f.strip() for f in name_raw.split('|')]
+        as_name = name_fields[4] if len(name_fields) >= 5 else '不明'
+
+        lines = [sep(nc), cc(BC, f'  ASN情報: {query}', nc), '',
+                 cc(DC, '  ASN          ', nc) + cc(BW, f'AS{asn}', nc),
+                 cc(DC, '  組織名       ', nc) + cc(BG, as_name, nc),
+                 cc(DC, '  CIDR         ', nc) + cc(D, prefix, nc),
+                 cc(DC, '  国           ', nc) + cc(D, cc_code, nc),
+                 cc(DC, '  レジストリ   ', nc) + cc(D, registry, nc),
+                 cc(DC, '  登録日       ', nc) + cc(D, alloc_date, nc),
+                 sep(nc),
+                 hint(f'/asn/{query}', nc)]
+        return '\n'.join(lines) + '\n'
+    except Exception as e:
+        lines = [sep(nc), cc(BR, f'  ASN情報の取得に失敗しました', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+
+# ── /robots ───────────────────────────────────────────────────────────────────
+
+def do_robots(domain, nc):
+    if not domain:
+        lines = [sep(nc), cc(BC, '  robots.txt 確認', nc), '',
+                 cc(D, '  使い方: /robots/{ドメイン}', nc),
+                 cc(BW, '  $ curl clilap.org/robots/github.com', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    if is_private_host(domain):
+        lines = [sep(nc), cc(BR, '  プライベートホストへのアクセスは禁止されています', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    url = f'https://{domain}/robots.txt'
+    try:
+        req = Request(url, headers={'User-Agent': 'clilap.org/1.0'})
+        with urlopen(req, timeout=8) as r:
+            body = r.read().decode('utf-8', errors='replace')
+    except URLError as e:
+        lines = [sep(nc), cc(BR, f'  取得失敗: {e}', nc), sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    rules_by_agent = {}
+    current_agents = []
+    sitemaps = []
+    for raw_line in body.splitlines():
+        line = raw_line.split('#', 1)[0].strip()
+        if not line or ':' not in line:
+            continue
+        key, _, val = line.partition(':')
+        key = key.strip().lower()
+        val = val.strip()
+        if key == 'user-agent':
+            current_agents = [val]
+            rules_by_agent.setdefault(val, [])
+        elif key in ('disallow', 'allow', 'crawl-delay') and current_agents:
+            for agent in current_agents:
+                rules_by_agent[agent].append((key, val))
+        elif key == 'sitemap':
+            sitemaps.append(val)
+
+    lines = [sep(nc), cc(BC, f'  robots.txt: {domain}', nc), '']
+    if not rules_by_agent:
+        lines.append(cc(D, '  ルールなし (robots.txtが空または読み取れません)', nc))
+    for agent, rules in rules_by_agent.items():
+        tag = cc(BG, agent, nc) if agent == '*' else cc(BW, agent, nc)
+        lines.append(f'  {cc(D, "User-agent:", nc)} {tag}')
+        for key, val in rules[:30]:
+            color = BR if key == 'disallow' else BG if key == 'allow' else DC
+            lines.append(f'    {cc(color, key.capitalize(), nc)}: {val}')
+        lines.append('')
+
+    if sitemaps:
+        lines.append(cc(D, '  Sitemap:', nc))
+        for sm in sitemaps[:10]:
+            lines.append(f'    {cc(C, sm, nc)}')
+        lines.append('')
+
+    lines += [sep(nc), hint(f'/robots/{domain}', nc)]
+    return '\n'.join(lines) + '\n'
+
+
+# ── /useragent ────────────────────────────────────────────────────────────────
+
+_UA_BROWSERS = [
+    (r'Edg/([\d.]+)', 'Microsoft Edge'),
+    (r'OPR/([\d.]+)', 'Opera'),
+    (r'Chrome/([\d.]+)', 'Chrome'),
+    (r'CriOS/([\d.]+)', 'Chrome (iOS)'),
+    (r'Firefox/([\d.]+)', 'Firefox'),
+    (r'Version/([\d.]+).*Safari', 'Safari'),
+    (r'MSIE ([\d.]+)', 'Internet Explorer'),
+    (r'Trident/.*rv:([\d.]+)', 'Internet Explorer'),
+]
+_UA_OS = [
+    (r'Windows NT 10\.0', 'Windows 10/11'),
+    (r'Windows NT ([\d.]+)', 'Windows'),
+    (r'Mac OS X ([\d_.]+)', 'macOS'),
+    (r'Android ([\d.]+)', 'Android'),
+    (r'iPhone OS ([\d_]+)', 'iOS'),
+    (r'CPU OS ([\d_]+)', 'iOS'),
+    (r'Linux', 'Linux'),
+]
+_UA_DEVICE = [
+    (r'iPhone', 'iPhone'),
+    (r'iPad', 'iPad'),
+    (r'Android.*Mobile', 'Android Phone'),
+    (r'Android', 'Android Tablet'),
+    (r'Mobile', 'Mobile'),
+]
+
+def do_useragent(ua_str, nc):
+    if not ua_str:
+        lines = [sep(nc), cc(BC, '  User-Agent パーサー', nc), '',
+                 cc(D, '  使い方: /useragent/{UA文字列} または Headerなしでリクエスト元のUAを解析', nc),
+                 cc(BW, '  $ curl clilap.org/useragent', nc),
+                 cc(BW, '  $ curl -A "Mozilla/5.0 ..." clilap.org/useragent', nc),
+                 sep(nc)]
+        return '\n'.join(lines) + '\n'
+
+    browser, browser_ver = '不明', ''
+    for pattern, name in _UA_BROWSERS:
+        m = re.search(pattern, ua_str)
+        if m:
+            browser, browser_ver = name, m.group(1)
+            break
+
+    os_name, os_ver = '不明', ''
+    for pattern, name in _UA_OS:
+        m = re.search(pattern, ua_str)
+        if m:
+            os_name = name
+            os_ver = m.group(1).replace('_', '.') if m.groups() else ''
+            break
+
+    device = 'デスクトップ'
+    for pattern, name in _UA_DEVICE:
+        if re.search(pattern, ua_str):
+            device = name
+            break
+
+    is_bot = bool(re.search(r'bot|crawler|spider|curl|wget|python-requests', ua_str, re.I))
+
+    lines = [sep(nc), cc(BC, '  User-Agent 解析', nc), '',
+             cc(D, '  入力  ', nc) + cc(BW, ua_str[:200], nc), '',
+             cc(DC, '  ブラウザ  ', nc) + cc(BG, f'{browser} {browser_ver}'.strip(), nc),
+             cc(DC, '  OS        ', nc) + cc(BG, f'{os_name} {os_ver}'.strip(), nc),
+             cc(DC, '  デバイス  ', nc) + cc(D, device, nc),
+             cc(DC, '  ボット    ', nc) + (cc(BY, 'はい', nc) if is_bot else cc(D, 'いいえ', nc)),
+             sep(nc),
+             hint('/useragent              — 自分のUAを解析', nc),
+             hint('/useragent/{UA文字列}   — 指定UAを解析', nc)]
+    return '\n'.join(lines) + '\n'
+
+
 # ── Handler ───────────────────────────────────────────────────────────────────
 
 class Handler(BaseHTTPRequestHandler):
@@ -999,6 +1239,16 @@ class Handler(BaseHTTPRequestHandler):
         elif service == 'dns' and len(args) >= 2 and args[-1] == 'all':
             domain = args[0] if args else ''
             respond(do_dns_all(domain, nc))
+        elif service == 'cidr':
+            cidr_str = '/'.join(args) if args else ''
+            respond(do_cidr(cidr_str, nc))
+        elif service == 'asn':
+            respond(do_asn(args[0] if args else '', nc))
+        elif service == 'robots':
+            respond(do_robots(args[0] if args else '', nc))
+        elif service == 'useragent':
+            ua_str = '/'.join(args) if args else self.headers.get('User-Agent', '')
+            respond(do_useragent(ua_str, nc))
         else:
             self._send('Not found\n', status=404)
 

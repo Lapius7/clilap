@@ -463,6 +463,83 @@ Open `https://log.clilap.org/abc123` in a browser for a realtime live-updating v
 
 ---
 
+### 🌐 CIDR Calculator — `/cidr`
+
+```bash
+curl clilap.org/cidr/192.168.1.0/24
+curl clilap.org/cidr/10.0.0.0/8
+curl clilap.org/cidr/2001:db8::/32
+```
+
+### 🌍 ASN Lookup — `/asn`
+
+```bash
+curl clilap.org/asn/8.8.8.8
+curl clilap.org/asn/1.1.1.1
+```
+
+Uses Team Cymru's DNS-based lookup. IPv4 only.
+
+### 🤖 robots.txt Inspector — `/robots`
+
+```bash
+curl clilap.org/robots/github.com
+```
+
+### 🕵 User-Agent Parser — `/useragent`
+
+```bash
+curl clilap.org/useragent                          # parse your own UA
+curl -A "Mozilla/5.0 ..." clilap.org/useragent     # parse a given UA
+```
+
+### 🔐 JWT Decoder — `/jwt`
+
+```bash
+curl clilap.org/jwt/{token}
+echo "{token}" | curl -d @- clilap.org/jwt
+```
+
+> ⚠ Signature is not verified. Don't trust untrusted token contents blindly.
+
+### 📡 Morse Code — `/morse`
+
+```bash
+curl clilap.org/morse/encode/SOS
+curl clilap.org/morse/decode/..._---_...
+echo "Hello" | curl -d @- clilap.org/morse/encode
+```
+
+Use `_` to separate letters and `/` to separate words when decoding.
+
+### 🔄 Format Converter — `/convert`
+
+```bash
+curl --data-binary @data.json clilap.org/convert/json/yaml
+curl --data-binary @data.yaml clilap.org/convert/yaml/json
+curl --data-binary @data.csv  clilap.org/convert/csv/json
+curl --data-binary @data.toml clilap.org/convert/toml/json
+curl --data-binary @data.ini  clilap.org/convert/ini/json
+```
+
+Supported formats: `json` `yaml` `toml` `ini` `csv`. Use `--data-binary` (not `-d`) to preserve newlines/indentation. YAML support is a minimal subset (nesting, lists, scalars only).
+
+### 🌙 Moon Phase — `/moon`
+
+```bash
+curl clilap.org/moon                # today's phase
+curl clilap.org/moon/2026-01-01     # phase on a given date
+```
+
+### 🌅 Sunrise/Sunset — `/sunrise`
+
+```bash
+curl clilap.org/sunrise/Tokyo
+curl clilap.org/sunrise             # auto-detect from IP
+```
+
+---
+
 ## Common Options
 
 | Option | Effect          |

@@ -437,6 +437,83 @@ curl "log.clilap.org/abc123?grep=ERROR"     # 正規表現でフィルタ
 
 ---
 
+### 🌐 CIDR計算 — `/cidr`
+
+```bash
+curl clilap.org/cidr/192.168.1.0/24
+curl clilap.org/cidr/10.0.0.0/8
+curl clilap.org/cidr/2001:db8::/32
+```
+
+### 🌍 ASN情報 — `/asn`
+
+```bash
+curl clilap.org/asn/8.8.8.8
+curl clilap.org/asn/1.1.1.1
+```
+
+Team Cymru の DNS-based lookup を使用。IPv4のみ対応。
+
+### 🤖 robots.txt 確認 — `/robots`
+
+```bash
+curl clilap.org/robots/github.com
+```
+
+### 🕵 User-Agent 解析 — `/useragent`
+
+```bash
+curl clilap.org/useragent                          # 自分のUAを解析
+curl -A "Mozilla/5.0 ..." clilap.org/useragent     # 指定UAを解析
+```
+
+### 🔐 JWT デコーダー — `/jwt`
+
+```bash
+curl clilap.org/jwt/{token}
+echo "{token}" | curl -d @- clilap.org/jwt
+```
+
+> ⚠ 署名検証は行いません。信頼できないトークンの内容を鵜呑みにしないでください。
+
+### 📡 モールス信号変換 — `/morse`
+
+```bash
+curl clilap.org/morse/encode/SOS
+curl clilap.org/morse/decode/..._---_...
+echo "Hello" | curl -d @- clilap.org/morse/encode
+```
+
+デコード時、文字間は `_`（アンダースコア）、単語間は `/` で区切ります。
+
+### 🔄 フォーマット変換 — `/convert`
+
+```bash
+curl --data-binary @data.json clilap.org/convert/json/yaml
+curl --data-binary @data.yaml clilap.org/convert/yaml/json
+curl --data-binary @data.csv  clilap.org/convert/csv/json
+curl --data-binary @data.toml clilap.org/convert/toml/json
+curl --data-binary @data.ini  clilap.org/convert/ini/json
+```
+
+対応フォーマット: `json` `yaml` `toml` `ini` `csv`。改行・インデントが壊れるため `-d` でなく `--data-binary` を使用してください。YAML対応は簡易サブセット（ネスト・リスト・スカラー値のみ）。
+
+### 🌙 月相 — `/moon`
+
+```bash
+curl clilap.org/moon              # 今日の月相
+curl clilap.org/moon/2026-01-01   # 指定日の月相
+```
+
+### 🌅 日の出・日の入り — `/sunrise`
+
+```bash
+curl clilap.org/sunrise/Tokyo
+curl clilap.org/sunrise           # IPアドレスから自動判定
+```
+
+---
+
 ## 共通オプション
 
 | オプション | 効果 |
