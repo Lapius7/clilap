@@ -1,0 +1,19 @@
+{
+  "name": "@lapius/clilap",
+  "version": "0.0.0",
+  "description": "clilap.org（天気・チートシート・GitHub・DNS・ハッシュなど）をターミナルから使う CLI",
+  "keywords": ["cli", "curl", "weather", "cheatsheet", "dns", "hash", "terminal"],
+  "homepage": "https://github.com/Lapius7/clilap",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lapius7/clilap.git"
+  },
+  "license": "MIT",
+  "bin": {
+    "clilap": "bin/clilap"
+  },
+  "files": ["bin/clilap"],
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,115 @@
+#!/usr/bin/env node
+// clilap.org のクライアント。引数を / でつないだパスに GET し、結果をそのまま表示する。
+// 標準入力がパイプなら、その内容を本文にして POST する（curl -d @- と同じ）。
+'use strict';
+
+const BASE = process.env.CLILAP_URL || 'https://clilap.org';
+const VERSION = require('../package.json').version;
+
+const USAGE = `clilap - clilap.org のツールをターミナルから使う
+
+使い方:
+  clilap                         サービス一覧
+  clilap <サービス> [引数...]     例: clilap weather 東京都 新宿区
+  <コマンド> | clilap <サービス>  標準入力を送る  例: echo hello | clilap hash sha256
+  clilap diff <旧ファイル> <新ファイル>
+
+オプション:
+  -d, --data <文字列|@ファイル>  本文を送る（@- で標準入力）
+      --en / --ja               出力の言語
+      --no-color                色を付けない（パイプ先が端末でなければ自動）
+  -h, --help                    このヘルプ
+  -v, --version                 バージョン
+`;
+
+function fail(msg) {
+  console.error('clilap: ' + msg);
+  process.exit(2);
+}
+
+// 標準入力がパイプかファイルのときだけ読む（/dev/null や端末で待ち続けないように）
+function stdinPiped() {
+  try {
+    const st = require('fs').fstatSync(0);
+    return st.isFIFO() || st.isFile() || st.isSocket();
+  } catch {
+    return false;
+  }
+}
+
+async function readStdin() {
+  const chunks = [];
+  for await (const c of process.stdin) chunks.push(c);
+  return Buffer.concat(chunks);
+}
+
+function readData(v) {
+  if (v === '@-') return readStdin();
+  if (v.startsWith('@')) {
+    try {
+      return require('fs').readFileSync(v.slice(1));
+    } catch (e) {
+      fail(`${v.slice(1)} を読めません: ${e.message}`);
+    }
+  }
+  return Buffer.from(v);
+}
+
+async function main(argv) {
+  const parts = [];
+  const query = [];
+  let data = null;
+  let color = process.stdout.isTTY && !process.env.NO_COLOR;
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '-h' || a === '--help') return process.stdout.write(USAGE);
+    if (a === '-v' || a === '--version') return console.log('clilap ' + VERSION);
+    if (a === '--en' || a === '--ja') query.push(a.slice(2));
+    else if (a === '--no-color') color = false;
+    else if (a === '-d' || a === '--data') {
+      if (i + 1 >= argv.length) fail(`${a} の後に値が必要です`);
+      data = await readData(argv[++i]);
+    } else if (a.startsWith('?')) query.push(a.slice(1));
+    else parts.push(a);
+  }
+
+  const opts = { headers: { 'User-Agent': `clilap-cli/${VERSION}` } };
+  if (parts[0] === 'diff' && parts.length === 3) {
+    // diff は 2 つのファイルを multipart で送る（curl -F a=@旧 -F b=@新）
+    const fs = require('fs');
+    const form = new FormData();
+    for (const [key, file] of [['a', parts[1]], ['b', parts[2]]]) {
+      let body;
+      try {
+        body = fs.readFileSync(file);
+      } catch (e) {
+        fail(`${file} を読めません: ${e.message}`);
+      }
+      form.append(key, new Blob([body]), require('path').basename(file));
+    }
+    parts.length = 1;
+    opts.method = 'POST';
+    opts.body = form;
+  } else if (data === null && parts.length > 0 && stdinPiped()) {
+    const body = await readStdin();
+    if (body.length > 0) data = body;
+  }
+  if (data !== null) {
+    opts.method = 'POST';
+    opts.body = data;
+  }
+
+  const url = BASE + '/' + parts.map(encodeURIComponent).join('/') + (query.length ? '?' + query.join('&') : '');
+  let res;
+  try {
+    res = await fetch(url, opts);
+  } catch (e) {
+    fail(`${BASE} に接続できません: ${e.cause?.message || e.message}`);
+  }
+  let text = await res.text();
+  if (!color) text = text.replace(/\x1b\[[0-9;]*m/g, '');
+  process.stdout.write(text);
+  if (!res.ok) process.exitCode = 1;
+}
+
+main(process.argv.slice(2));

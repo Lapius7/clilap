@@ -25,6 +25,15 @@
 curl clilap.org
 ```
 
+CLI クライアントも使えます（Node.js 18 以降）。引数がパスになり、パイプした標準入力は本文として送られます:
+
+```bash
+npm i -g @lapius/clilap
+clilap weather 東京都 新宿区
+echo hello | clilap hash sha256
+clilap diff old.txt new.txt
+```
+
 [English README](README.md)
 
 ---
