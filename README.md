@@ -25,6 +25,15 @@ No-install developer tools accessible via `curl`. Weather forecasts, cheat sheet
 curl clilap.org
 ```
 
+Or install the CLI client (Node.js 18+) — arguments become the path, and piped stdin is sent as the body:
+
+```bash
+npm i -g @lapius/clilap
+clilap weather Tokyo
+echo hello | clilap hash sha256
+clilap diff old.txt new.txt
+```
+
 [日本語 README](README.ja.md)
 
 ---
