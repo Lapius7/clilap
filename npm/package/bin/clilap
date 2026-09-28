@@ -55,6 +55,18 @@ function readData(v) {
   return Buffer.from(v);
 }
 
+// --help / --version の最後に出す作者表示と lapacks の案内
+function lapiusFooter() {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const exts = process.platform === 'win32' ? ['.cmd', '.exe', ''] : [''];
+  const has = (process.env.PATH || '').split(path.delimiter).some((d) =>
+    d && exts.some((e) => fs.existsSync(path.join(d, 'lapacks' + e))));
+  return '作者: Lapius (https://github.com/Lapius7)\n' + (has
+    ? '@lapius のツール: lapacks で一覧・インストール・更新\n'
+    : '@lapius のツール: npm i -g @lapius/lapacks で一覧・インストール・更新を管理\n');
+}
+
 async function main(argv) {
   const parts = [];
   const query = [];
@@ -62,8 +74,8 @@ async function main(argv) {
   let color = process.stdout.isTTY && !process.env.NO_COLOR;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '-h' || a === '--help') return process.stdout.write(USAGE);
-    if (a === '-v' || a === '--version') return console.log('clilap ' + VERSION);
+    if (a === '-h' || a === '--help') return process.stdout.write(USAGE + '\n' + lapiusFooter());
+    if (a === '-v' || a === '--version') return process.stdout.write('clilap ' + VERSION + '\n' + lapiusFooter());
     if (a === '--en' || a === '--ja') query.push(a.slice(2));
     else if (a === '--no-color') color = false;
     else if (a === '-d' || a === '--data') {
