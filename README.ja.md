@@ -25,14 +25,41 @@
 curl clilap.org
 ```
 
-CLI クライアントも使えます（Node.js 18 以降）。引数がパスになり、パイプした標準入力は本文として送られます:
+## インストール
+
+### npm（推奨）
 
 ```bash
 npm i -g @lapius/clilap
-clilap weather 東京都 新宿区
-echo hello | clilap hash sha256
-clilap diff old.txt new.txt
 ```
+
+`clilap` コマンドが使えるようになります（Node.js 18 以降）。以下のサービスはすべて `curl` でも `clilap` でも同じように使えます。`clilap.org/` の後ろのパスを、スペース区切りの引数にするだけです。
+
+| curl | clilap |
+|---|---|
+| `curl clilap.org` | `clilap` |
+| `curl clilap.org/mock/json` | `clilap mock json` |
+| `curl clilap.org/weather/東京都/新宿区` | `clilap weather 東京都 新宿区` |
+| `curl "clilap.org/cheat/tar?en"` | `clilap cheat tar --en` |
+| `curl "clilap.org/json?compact" -d @data.json` | `clilap json '?compact' -d @data.json` |
+| `echo hello \| curl -d @- clilap.org/hash/sha256` | `echo hello \| clilap hash sha256` |
+| `curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff` | `clilap diff old.txt new.txt` |
+
+オプション:
+
+| オプション | 説明 |
+|---|---|
+| `-d, --data <文字列\|@ファイル\|@->` | 本文を送る（`@-` で標準入力。パイプした標準入力は自動で送られる） |
+| `--en` / `--ja` | 出力の言語（`?en` / `?ja` と同じ） |
+| `?<クエリ>` | クエリを付ける（例: `'?compact'`） |
+| `--no-color` | 色を付けない（出力先が端末でなければ自動） |
+| `-h, --help` / `-v, --version` | ヘルプ / バージョン |
+
+更新も同じ `npm i -g @lapius/clilap` です。接続先は環境変数 `CLILAP_URL` で変えられます。サーバーがエラーを返すと終了コード 1 で終わります。
+
+### インストールなし
+
+`curl` だけで使えます。以下の例はすべて `curl` で書いています。
 
 [English README](README.md)
 
@@ -529,6 +556,8 @@ curl clilap.org/sunrise           # IPアドレスから自動判定
 |-----------|------|
 | `?ja`     | 日本語表示 |
 | `?en`     | 英語表示 |
+
+`clilap` クライアントでは `--ja` / `--en` を使います。
 
 ---
 

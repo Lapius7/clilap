@@ -25,14 +25,41 @@ No-install developer tools accessible via `curl`. Weather forecasts, cheat sheet
 curl clilap.org
 ```
 
-Or install the CLI client (Node.js 18+) — arguments become the path, and piped stdin is sent as the body:
+## Install
+
+### npm (recommended)
 
 ```bash
 npm i -g @lapius/clilap
-clilap weather Tokyo
-echo hello | clilap hash sha256
-clilap diff old.txt new.txt
 ```
+
+This installs the `clilap` command (Node.js 18+). Every service below works the same way with either `curl` or `clilap`: the path segments after `clilap.org/` become the arguments.
+
+| curl | clilap |
+|---|---|
+| `curl clilap.org` | `clilap` |
+| `curl clilap.org/mock/json` | `clilap mock json` |
+| `curl clilap.org/weather/Tokyo` | `clilap weather Tokyo` |
+| `curl "clilap.org/cheat/tar?en"` | `clilap cheat tar --en` |
+| `curl "clilap.org/json?compact" -d @data.json` | `clilap json '?compact' -d @data.json` |
+| `echo hello \| curl -d @- clilap.org/hash/sha256` | `echo hello \| clilap hash sha256` |
+| `curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff` | `clilap diff old.txt new.txt` |
+
+Options:
+
+| Option | Effect |
+|---|---|
+| `-d, --data <text\|@file\|@->` | Send a request body (`@-` = stdin; piped stdin is sent automatically) |
+| `--en` / `--ja` | Output language (same as `?en` / `?ja`) |
+| `?<query>` | Add a query parameter, e.g. `'?compact'` |
+| `--no-color` | Disable colors (automatic when stdout is not a terminal) |
+| `-h, --help` / `-v, --version` | Help / version |
+
+Update with the same `npm i -g @lapius/clilap`. The server can be changed with the `CLILAP_URL` environment variable. The exit code is 1 when the server returns an error.
+
+### No install
+
+Just use `curl` — all examples below are written with `curl`.
 
 [日本語 README](README.ja.md)
 
@@ -555,6 +582,8 @@ curl clilap.org/sunrise             # auto-detect from IP
 |--------|-----------------|
 | `?ja`  | Japanese output |
 | `?en`  | English output  |
+
+With the `clilap` client, use `--ja` / `--en`.
 
 ---
 
