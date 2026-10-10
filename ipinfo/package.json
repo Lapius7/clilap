@@ -12,5 +12,6 @@
   "type": "commonjs",
   "dependencies": {
     "geoip-lite": "^2.0.2"
-  }
+  },
+  "packageManager": "pnpm@12.6.0"
 }

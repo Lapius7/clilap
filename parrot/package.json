@@ -18,5 +18,6 @@
     "email": "npmjs@hugo.sx",
     "url": "hu.md"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "pnpm@12.6.0"
 }
