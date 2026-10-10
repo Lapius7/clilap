@@ -30,7 +30,7 @@ curl clilap.org
 ### npm（推奨）
 
 ```bash
-npm i -g @lapius/clilap
+pnpm add -g @lapius/clilap
 ```
 
 `clilap` コマンドが使えるようになります（Node.js 18 以降）。以下のサービスはすべて `curl` でも `clilap` でも同じように使えます。`clilap.org/` の後ろのパスを、スペース区切りの引数にするだけです。
@@ -55,7 +55,7 @@ npm i -g @lapius/clilap
 | `--no-color` | 色を付けない（出力先が端末でなければ自動） |
 | `-h, --help` / `-v, --version` | ヘルプ / バージョン |
 
-更新も同じ `npm i -g @lapius/clilap` です。接続先は環境変数 `CLILAP_URL` で変えられます。サーバーがエラーを返すと終了コード 1 で終わります。
+更新も同じ `pnpm add -g @lapius/clilap` です。接続先は環境変数 `CLILAP_URL` で変えられます。サーバーがエラーを返すと終了コード 1 で終わります。
 
 ### インストールなし
 

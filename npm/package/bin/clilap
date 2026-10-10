@@ -64,7 +64,7 @@ function lapiusFooter() {
     d && exts.some((e) => fs.existsSync(path.join(d, 'lapacks' + e))));
   return '作者: Lapius (https://github.com/Lapius7)\n' + (has
     ? '@lapius のツール: lapacks で一覧・インストール・更新\n'
-    : '@lapius のツール: npm i -g @lapius/lapacks で一覧・インストール・更新を管理\n');
+    : '@lapius のツール: pnpm add -g @lapius/lapacks で一覧・インストール・更新を管理\n');
 }
 
 async function main(argv) {

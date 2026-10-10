@@ -30,7 +30,7 @@ curl clilap.org
 ### npm (recommended)
 
 ```bash
-npm i -g @lapius/clilap
+pnpm add -g @lapius/clilap
 ```
 
 This installs the `clilap` command (Node.js 18+). Every service below works the same way with either `curl` or `clilap`: the path segments after `clilap.org/` become the arguments.
@@ -55,7 +55,7 @@ Options:
 | `--no-color` | Disable colors (automatic when stdout is not a terminal) |
 | `-h, --help` / `-v, --version` | Help / version |
 
-Update with the same `npm i -g @lapius/clilap`. The server can be changed with the `CLILAP_URL` environment variable. The exit code is 1 when the server returns an error.
+Update with the same `pnpm add -g @lapius/clilap`. The server can be changed with the `CLILAP_URL` environment variable. The exit code is 1 when the server returns an error.
 
 ### No install
 
