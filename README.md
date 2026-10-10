@@ -27,7 +27,9 @@ curl clilap.org
 
 ## Install
 
-### npm (recommended)
+### pnpm (recommended)
+
+> This package assumes **pnpm**. Installing it with both npm and pnpm creates duplicate commands, so use `pnpm add -g` only.
 
 ```bash
 pnpm add -g @lapius/clilap
