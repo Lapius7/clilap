@@ -6,7 +6,7 @@ import re
 import unicodedata
 import urllib.request
 import urllib.parse
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs, unquote
 from datetime import datetime
 
@@ -735,6 +735,14 @@ def render_html(location_name, data, lang='ja'):
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args): pass
 
+    def handle_error(self, request, client_address):
+        # クライアント切断による BrokenPipeError/ConnectionResetError はよくあるノイズなので握りつぶす
+        import sys
+        exc = sys.exc_info()[1]
+        if isinstance(exc, (BrokenPipeError, ConnectionResetError)):
+            return
+        super().handle_error(request, client_address)
+
     def do_GET(self):
         parsed   = urlparse(self.path)
         qs       = parse_qs(parsed.query)
@@ -832,6 +840,10 @@ class Handler(BaseHTTPRequestHandler):
                  html=browser)
 
 if __name__ == '__main__':
-    server = HTTPServer(('127.0.0.1', PORT), Handler)
+    # クライアントが受信待ちせず切断するとBrokenPipeError等がリクエスト単位で発生する。
+    # ThreadingHTTPServerでリクエストごとにスレッド分離し、1件の異常でプロセス全体が
+    # 落ちてPM2の再起動ループに入らないようにする。
+    ThreadingHTTPServer.daemon_threads = True
+    server = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
     print(f'weather server listening on 127.0.0.1:{PORT}')
     server.serve_forever()
