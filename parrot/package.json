@@ -19,5 +19,5 @@
     "url": "hu.md"
   },
   "license": "MIT",
-  "packageManager": "pnpm@12.6.0"
+  "packageManager": "pnpm@12.16.1"
 }
