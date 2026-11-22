@@ -1,29 +1,31 @@
 <div align="center">
-<pre>
-        __ _ _            
-  _____/ /(_) /___ _____  
- / ___/ / / / / __ `/ __ \ 
-/ /__/ / / / / /_/ / /_/ / 
-\___/_/_/_/_/\__,_/ .___/  
-                 /_/       
-</pre>
+
+<p align="center">
+  <img src="docs/images/banner.png" alt="Clilap" width="100%">
+</p>
+
+<p align="center"><a href="README.md">English</a> | <b>日本語</b></p>
+
+<h1 align="center">Clilap</h1>
+
+<h3 align="center">curl だけで使える開発者向けツール集。</h3>
+
+<p align="center">インストール不要で <code>curl clilap.org</code> から使える開発者向けツール集。天気予報・コマンドチートシート・GitHub 情報・DNS・ハッシュ計算などを、ターミナルから直接使えます。</p>
+
+<p align="center">
+  <a href="https://github.com/Lapius7/clilap/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Lapius7/clilap?label=release&style=flat-square&color=e8833a&logo=github"></a>
+  <a href="https://www.npmjs.com/package/@lapius/clilap"><img alt="npm" src="https://img.shields.io/npm/v/@lapius/clilap?style=flat-square&color=cb3837&logo=npm"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/Lapius7/clilap?style=flat-square&color=97ca00"></a>
+  <a href="https://clilap.org"><img alt="curl clilap.org" src="https://img.shields.io/badge/try%20it-curl%20clilap.org-4ec9b0?style=flat-square"></a>
+  <a href="https://github.com/Lapius7/clilap/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=e3b341&logo=github"></a>
+  <a href="https://github.com/Lapius7/clilap/commits/master"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Lapius7/clilap?label=last%20commit&style=flat-square&color=2f81f7"></a>
+</p>
+
+<p align="center"><a href="#インストール">インストール</a> · <a href="#サービス一覧">サービス一覧</a> · <a href="#共通オプション">共通オプション</a> · <a href="#データソース">データソース</a></p>
+
 </div>
 
-[![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
-[![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
-[![Issues](https://img.shields.io/github/issues/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/issues)
-[![Last Commit](https://img.shields.io/github/last-commit/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/commits)
-[![Repo Size](https://img.shields.io/github/repo-size/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![Node.js](https://img.shields.io/badge/node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![curl](https://img.shields.io/badge/試す-curl%20clilap.org-4ec9b0?style=flat-square)](https://clilap.org)
-
-インストール不要で `curl` から使える開発者向けツール集。天気予報・コマンドチートシート・GitHub情報・DNS・ハッシュ計算など、ターミナルから直接アクセスできる。
-
-```
-curl clilap.org
-```
+---
 
 ## インストール
 
@@ -47,7 +49,7 @@ pnpm add -g @lapius/clilap
 | `echo hello \| curl -d @- clilap.org/hash/sha256` | `echo hello \| clilap hash sha256` |
 | `curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff` | `clilap diff old.txt new.txt` |
 
-オプション:
+オプションは次のとおりです。
 
 | オプション | 説明 |
 |---|---|
@@ -65,11 +67,14 @@ pnpm add -g @lapius/clilap
 
 [English README](README.md)
 
----
-
 ## サービス一覧
 
-### 🌤 天気予報 — `/weather`
+> [!NOTE]
+> 以下のサービスの説明は旧 README から引き継いだ内容です。今回の書き直しでは、clilap.org に対して各サービスを実行し直していません(未検証)。
+
+<details>
+<summary><b>天気予報</b> — <code>/weather</code></summary>
+
 [Open-Meteo](https://open-meteo.com/) と [Nominatim](https://nominatim.org/) を使ったリアルタイム天気予報。
 
 ```bash
@@ -79,7 +84,11 @@ curl clilap.org/weather/東京都/新宿区  # 都道府県/市区町村
 curl clilap.org/weather/Tokyo?en     # 英語表示
 ```
 
-### 📖 チートシート — `/cheat`
+</details>
+
+<details>
+<summary><b>チートシート</b> — <code>/cheat</code></summary>
+
 [tldr-pages](https://github.com/tldr-pages/tldr) によるコマンドリファレンス。
 
 ```bash
@@ -90,7 +99,11 @@ curl clilap.org/cheat/git?ja         # 日本語（デフォルト）
 curl clilap.org/cheat/git?en         # 英語
 ```
 
-### 🐙 GitHub — `/github`
+</details>
+
+<details>
+<summary><b>GitHub</b> — <code>/github</code></summary>
+
 GitHub リポジトリ情報を curl で取得。
 
 ```bash
@@ -105,7 +118,11 @@ curl clilap.org/github/curl/curl/prs         # オープンなPR
 curl clilap.org/github/curl/curl/stars       # スター数のみ
 ```
 
-### 🌐 IP情報 — `/ipinfo`
+</details>
+
+<details>
+<summary><b>IP情報</b> — <code>/ipinfo</code></summary>
+
 IPアドレスの位置情報とメタデータ。
 
 ```bash
@@ -113,14 +130,22 @@ curl clilap.org/ipinfo               # 現在のIP
 curl clilap.org/ipinfo/8.8.8.8       # 特定IPを調べる
 ```
 
-### 🔍 リクエストヘッダー確認 — `/headers`
+</details>
+
+<details>
+<summary><b>リクエストヘッダー確認</b> — <code>/headers</code></summary>
+
 送信中のHTTPヘッダーを確認。
 
 ```bash
 curl clilap.org/headers
 ```
 
-### 🔑 UUID生成 — `/uuid`
+</details>
+
+<details>
+<summary><b>UUID生成</b> — <code>/uuid</code></summary>
+
 ランダムUUID (v4) を生成。
 
 ```bash
@@ -128,7 +153,11 @@ curl clilap.org/uuid                 # 1件
 curl clilap.org/uuid/5               # 5件
 ```
 
-### 🔒 Base64 — `/b64`
+</details>
+
+<details>
+<summary><b>Base64</b> — <code>/b64</code></summary>
+
 Base64のエンコード・デコード。
 
 ```bash
@@ -137,7 +166,11 @@ curl clilap.org/b64/decode/aGVsbG8=
 echo "hello world" | curl -d @- clilap.org/b64/encode
 ```
 
-### #️⃣ ハッシュ計算 — `/hash`
+</details>
+
+<details>
+<summary><b>ハッシュ計算</b> — <code>/hash</code></summary>
+
 暗号学的ハッシュを計算。
 
 対応アルゴリズム: `md5` `sha1` `sha256` `sha512` `sha3_256` `sha3_512`
@@ -147,7 +180,11 @@ curl clilap.org/hash/sha256/hello
 echo "hello" | curl -d @- clilap.org/hash/sha256
 ```
 
-### 🕐 Epoch変換 — `/epoch`
+</details>
+
+<details>
+<summary><b>Epoch変換</b> — <code>/epoch</code></summary>
+
 UNIXタイムスタンプと日時を相互変換。
 
 ```bash
@@ -156,7 +193,11 @@ curl clilap.org/epoch/1700000000     # UNIXタイム → 日時
 curl clilap.org/epoch/2024-01-01     # 日付 → UNIXタイム
 ```
 
-### 🌍 DNS Lookup — `/dns`
+</details>
+
+<details>
+<summary><b>DNS Lookup</b> — <code>/dns</code></summary>
+
 DNSレコードを調べる。
 
 対応タイプ: `A` `AAAA` `MX` `NS` `TXT` `CNAME` `SOA` `PTR`
@@ -166,14 +207,22 @@ curl clilap.org/dns/google.com       # Aレコード（デフォルト）
 curl clilap.org/dns/google.com/MX    # MXレコード
 ```
 
-### 📋 WHOIS — `/whois`
+</details>
+
+<details>
+<summary><b>WHOIS</b> — <code>/whois</code></summary>
+
 ドメイン登録情報。
 
 ```bash
 curl clilap.org/whois/github.com
 ```
 
-### 🎨 カラー変換 — `/color`
+</details>
+
+<details>
+<summary><b>カラー変換</b> — <code>/color</code></summary>
+
 カラーコードを変換・確認。
 
 ```bash
@@ -181,7 +230,11 @@ curl clilap.org/color/ff6b6b         # hex → RGB, HSL + ターミナルスウ�
 curl clilap.org/color/255,107,107    # RGB入力
 ```
 
-### 🔲 QRコード — `/qr`
+</details>
+
+<details>
+<summary><b>QRコード</b> — <code>/qr</code></summary>
+
 ターミナルでQRコードを生成。
 
 ```bash
@@ -189,14 +242,22 @@ curl clilap.org/qr/https://example.com
 curl clilap.org/qr/Hello+World
 ```
 
-### 🦜 Parrot — `/parrot`
+</details>
+
+<details>
+<summary><b>Parrot</b> — <code>/parrot</code></summary>
+
 カラフルなオウムのアニメーション。
 
 ```bash
 curl clilap.org/parrot
 ```
 
-### 🔐 パスワード生成 — `/password`
+</details>
+
+<details>
+<summary><b>パスワード生成</b> — <code>/password</code></summary>
+
 暗号学的に安全なランダムパスワード・パスフレーズを生成します。
 
 ```bash
@@ -207,7 +268,11 @@ curl clilap.org/password/phrase       # パスフレーズ
 curl clilap.org/password/phrase/5     # 5ワード
 ```
 
-### 📐 単位変換 — `/unit`
+</details>
+
+<details>
+<summary><b>単位変換</b> — <code>/unit</code></summary>
+
 長さ・重さ・時間・データ・速度・温度の単位を変換します。
 
 ```bash
@@ -217,7 +282,11 @@ curl clilap.org/unit/100C/F           # 温度
 curl clilap.org/unit/3600s/h          # 時間
 ```
 
-### 💱 為替レート — `/rate`
+</details>
+
+<details>
+<summary><b>為替レート</b> — <code>/rate</code></summary>
+
 法定通貨の為替レートと暗号資産の価格をリアルタイムで取得します。
 
 ```bash
@@ -228,7 +297,11 @@ curl clilap.org/rate/BTC              # Bitcoin価格
 curl clilap.org/rate/ETH/USD          # ETH → USD
 ```
 
-### 🕐 世界時計 — `/time`
+</details>
+
+<details>
+<summary><b>世界時計</b> — <code>/time</code></summary>
+
 世界中の都市の現在時刻を表示します。
 
 ```bash
@@ -238,7 +311,11 @@ curl clilap.org/time/New+York
 curl clilap.org/time/Tokyo/London     # 2都市を比較
 ```
 
-### 🔒 SSL証明書確認 — `/ssl`
+</details>
+
+<details>
+<summary><b>SSL証明書確認</b> — <code>/ssl</code></summary>
+
 ドメインのSSL証明書の詳細を取得します。有効期限・SANsを確認。
 
 ```bash
@@ -246,7 +323,11 @@ curl clilap.org/ssl/github.com
 curl clilap.org/ssl/lapius7.com
 ```
 
-### 🛡 セキュリティヘッダー — `/sec`
+</details>
+
+<details>
+<summary><b>セキュリティヘッダー</b> — <code>/sec</code></summary>
+
 HTTPセキュリティヘッダーを確認してグレード（A+〜F）を表示します。
 
 ```bash
@@ -254,14 +335,22 @@ curl clilap.org/sec/github.com
 curl clilap.org/sec/lapius7.com
 ```
 
-### 🗺 DNSマップ — `/dnsmap`
+</details>
+
+<details>
+<summary><b>DNSマップ</b> — <code>/dnsmap</code></summary>
+
 4つのDNSリゾルバー（Cloudflare/Google/Quad9/OpenDNS）で同時にAレコードを照会します。
 
 ```bash
 curl clilap.org/dnsmap/github.com
 ```
 
-### 🌐 DNS全レコード — `/dns/{domain}/all`
+</details>
+
+<details>
+<summary><b>DNS全レコード</b> — <code>/dns/{domain}/all</code></summary>
+
 全DNS レコードタイプを一括取得します。
 
 ```bash
@@ -269,7 +358,11 @@ curl clilap.org/dns/github.com/all
 curl clilap.org/dns/lapius7.com/all
 ```
 
-### 🔌 ポートチェック — `/portcheck`
+</details>
+
+<details>
+<summary><b>ポートチェック</b> — <code>/portcheck</code></summary>
+
 外部ホストの指定ポートが開いているか確認します。
 
 ```bash
@@ -277,7 +370,11 @@ curl clilap.org/portcheck/github.com/443
 curl clilap.org/portcheck/example.com/22
 ```
 
-### 🔗 リダイレクトチェーン — `/redirect`
+</details>
+
+<details>
+<summary><b>リダイレクトチェーン</b> — <code>/redirect</code></summary>
+
 URLのリダイレクトチェーンを全て追跡して表示します。
 
 ```bash
@@ -285,7 +382,11 @@ curl clilap.org/redirect/https://bit.ly/...
 curl clilap.org/redirect/https://t.co/...
 ```
 
-### 📦 パッケージ情報 — `/package`
+</details>
+
+<details>
+<summary><b>パッケージ情報</b> — <code>/package</code></summary>
+
 npmとPyPIのパッケージ情報を取得します。
 
 ```bash
@@ -294,7 +395,11 @@ curl clilap.org/package/npm/@types/node
 curl clilap.org/package/pypi/requests
 ```
 
-### 🎨 ASCIIアート — `/ascii`
+</details>
+
+<details>
+<summary><b>ASCIIアート</b> — <code>/ascii</code></summary>
+
 figletを使ってテキストをASCIIアートに変換します。
 
 ```bash
@@ -302,7 +407,11 @@ curl clilap.org/ascii/Hello
 curl "clilap.org/ascii/Hi?font=slant"
 ```
 
-### 🔢 進数変換 — `/base`
+</details>
+
+<details>
+<summary><b>進数変換</b> — <code>/base</code></summary>
+
 2〜36進数を相互変換します。
 
 ```bash
@@ -312,7 +421,10 @@ curl clilap.org/base/10/2/255         # 10進 → 2進
 curl clilap.org/base/10/255?all       # 2〜36進数 全件表示
 ```
 
-### 🔗 URLエンコード — `/urlencode` `/urldecode`
+</details>
+
+<details>
+<summary><b>URLエンコード</b> — <code>/urlencode</code> <code>/urldecode</code></summary>
 
 ```bash
 curl clilap.org/urlencode/hello+world
@@ -320,7 +432,11 @@ curl clilap.org/urldecode/hello%20world
 echo "hello world" | curl -d @- clilap.org/urlencode
 ```
 
-### 📅 カレンダー — `/cal`
+</details>
+
+<details>
+<summary><b>カレンダー</b> — <code>/cal</code></summary>
+
 ターミナルにカレンダーを表示します。今日の日付はハイライト表示。
 
 ```bash
@@ -329,7 +445,11 @@ curl clilap.org/cal/2026              # 指定年
 curl clilap.org/cal/2026/6            # 指定月
 ```
 
-### ⏰ cron式パーサー — `/cron`
+</details>
+
+<details>
+<summary><b>⏰ cron式パーサー</b> — <code>/cron</code></summary>
+
 cron式を人間が読める説明文に変換します。
 
 ```bash
@@ -338,16 +458,25 @@ curl clilap.org/cron/@daily
 curl clilap.org/cron/@weekly
 ```
 
-### 🔑 TOTP生成 — `/totp`
+</details>
+
+<details>
+<summary><b>TOTP生成</b> — <code>/totp</code></summary>
+
 Base32シークレットからTOTPを生成します。
 
 ```bash
 curl clilap.org/totp/JBSWY3DPEHPK3PXP
 ```
 
-> ⚠ 実際の認証コードをHTTP経由で送信しないでください（テスト用のみ）。
+> [!WARNING]
+> 実際の認証コードをHTTP経由で送信しないでください（テスト用のみ）。
 
-### 🎲 モックデータ生成 — `/mock`
+</details>
+
+<details>
+<summary><b>モックデータ生成</b> — <code>/mock</code></summary>
+
 テスト用のダミーデータ（JSONユーザー / Lorem）を生成します。
 
 ```bash
@@ -357,7 +486,11 @@ curl clilap.org/mock/lorem            # Loremテキスト
 curl clilap.org/mock/lorem/3          # 3段落
 ```
 
-### 🚫 .gitignore生成 — `/gitignore`
+</details>
+
+<details>
+<summary><b>.gitignore生成</b> — <code>/gitignore</code></summary>
+
 GitHubのgitignoreテンプレートを取得します。複数言語を組み合わせ可能。
 
 ```bash
@@ -366,7 +499,11 @@ curl clilap.org/gitignore/python
 curl clilap.org/gitignore/node,python,macos,vscode
 ```
 
-### 📜 ライセンステキスト — `/license`
+</details>
+
+<details>
+<summary><b>ライセンステキスト</b> — <code>/license</code></summary>
+
 オープンソースライセンスのテキストを取得します。
 
 ```bash
@@ -378,7 +515,11 @@ curl clilap.org/license/gpl-3
 
 対応: `mit` `apache` `gpl-3` `gpl-2` `lgpl` `mpl` `isc` `bsd-2` `bsd-3` `unlicense` `agpl` `cc0`
 
-### {} JSONフォーマッター — `/json`
+</details>
+
+<details>
+<summary><b>{} JSONフォーマッター</b> — <code>/json</code></summary>
+
 JSONをフォーマット・バリデートします。POSTでJSONを送信してください。
 
 ```bash
@@ -387,14 +528,22 @@ curl -d @data.json clilap.org/json
 curl -d @data.json "clilap.org/json?compact"
 ```
 
-### 📝 差分表示 — `/diff`
+</details>
+
+<details>
+<summary><b>差分表示</b> — <code>/diff</code></summary>
+
 2つのファイルの差分をカラーで表示します。
 
 ```bash
 curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff
 ```
 
-### 📄 Markdownレンダリング — `/md`
+</details>
+
+<details>
+<summary><b>Markdownレンダリング</b> — <code>/md</code></summary>
+
 MarkdownをANSI付きのターミナル向けテキストに変換します。
 
 ```bash
@@ -402,7 +551,11 @@ cat README.md | curl -d @- clilap.org/md
 curl -d @README.md clilap.org/md
 ```
 
-### 🔡 Unicodeツール — `/unicode`
+</details>
+
+<details>
+<summary><b>Unicodeツール</b> — <code>/unicode</code></summary>
+
 文字情報・テキスト検査・名前検索・ファンシーテキスト変換。
 
 ```bash
@@ -416,9 +569,10 @@ curl clilap.org/unicode/fancy                 # スタイル一覧
 
 ファンシースタイル: `bold` `italic` `bolditalic` `script` `gothic` `doublestruck` `monospace` `circled` `bubble` ...
 
----
+</details>
 
-### 🔍 正規表現テスト — `/regex`
+<details>
+<summary><b>正規表現テスト</b> — <code>/regex</code></summary>
 
 Pythonの `re` エンジンで正規表現をテスト。マッチ数・位置・キャプチャグループを表示。
 
@@ -437,9 +591,10 @@ echo "2024-01-15" | curl -d @- "clilap.org/regex/(\d{4})-(\d{2})-(\d{2})"
 | `?flags=x` | 拡張モード (空白無視) |
 | `?flags=im` | フラグの組み合わせ |
 
----
+</details>
 
-### 📦 依存関係可視化 — `/dep`
+<details>
+<summary><b>依存関係可視化</b> — <code>/dep</code></summary>
 
 `package.json` をアップロードすると依存関係ツリーを解析し、共有可能なURLを発行します。循環依存検出・巨大依存ランキング・ライセンス検査にも対応。
 
@@ -455,9 +610,12 @@ curl dep.clilap.org/ab12cd/licenses   # ライセンス検査
 
 ブラウザでも確認可能: `https://dep.clilap.org/ab12cd`。解析データは無期限保存されます。
 
-### 📡 リアルタイムログ共有 — `/log`
+</details>
 
-コマンド出力やログファイルをリアルタイムでURL共有します。ANSI色はそのまま保持されます。2段階方式 — 先にアップロード用トークンを取得し、そこへストリームします（go run等、永久に終了しないプロセスでも確実にURLが手に入ります）:
+<details>
+<summary><b>リアルタイムログ共有</b> — <code>/log</code></summary>
+
+コマンド出力やログファイルをリアルタイムでURL共有します。ANSI色はそのまま保持されます。2段階方式で、先にアップロード用トークンを取得し、そこへストリームします（go run等、永久に終了しないプロセスでも確実にURLが手に入ります）。
 
 ```bash
 RES=$(curl -s clilap.org/log/new)
@@ -473,9 +631,10 @@ curl "log.clilap.org/abc123?grep=ERROR"     # 正規表現でフィルタ
 
 ブラウザで `https://log.clilap.org/abc123` を開くとリアルタイムに更新が表示されます（WebSocket配信、ANSI色付き）。
 
----
+</details>
 
-### 🌐 CIDR計算 — `/cidr`
+<details>
+<summary><b>CIDR計算</b> — <code>/cidr</code></summary>
 
 ```bash
 curl clilap.org/cidr/192.168.1.0/24
@@ -483,7 +642,10 @@ curl clilap.org/cidr/10.0.0.0/8
 curl clilap.org/cidr/2001:db8::/32
 ```
 
-### 🌍 ASN情報 — `/asn`
+</details>
+
+<details>
+<summary><b>ASN情報</b> — <code>/asn</code></summary>
 
 ```bash
 curl clilap.org/asn/8.8.8.8
@@ -492,29 +654,42 @@ curl clilap.org/asn/1.1.1.1
 
 Team Cymru の DNS-based lookup を使用。IPv4のみ対応。
 
-### 🤖 robots.txt 確認 — `/robots`
+</details>
+
+<details>
+<summary><b>robots.txt 確認</b> — <code>/robots</code></summary>
 
 ```bash
 curl clilap.org/robots/github.com
 ```
 
-### 🕵 User-Agent 解析 — `/useragent`
+</details>
+
+<details>
+<summary><b>User-Agent 解析</b> — <code>/useragent</code></summary>
 
 ```bash
 curl clilap.org/useragent                          # 自分のUAを解析
 curl -A "Mozilla/5.0 ..." clilap.org/useragent     # 指定UAを解析
 ```
 
-### 🔐 JWT デコーダー — `/jwt`
+</details>
+
+<details>
+<summary><b>JWT デコーダー</b> — <code>/jwt</code></summary>
 
 ```bash
 curl clilap.org/jwt/{token}
 echo "{token}" | curl -d @- clilap.org/jwt
 ```
 
-> ⚠ 署名検証は行いません。信頼できないトークンの内容を鵜呑みにしないでください。
+> [!WARNING]
+> 署名検証は行いません。信頼できないトークンの内容を鵜呑みにしないでください。
 
-### 📡 モールス信号変換 — `/morse`
+</details>
+
+<details>
+<summary><b>モールス信号変換</b> — <code>/morse</code></summary>
 
 ```bash
 curl clilap.org/morse/encode/SOS
@@ -524,7 +699,10 @@ echo "Hello" | curl -d @- clilap.org/morse/encode
 
 デコード時、文字間は `_`（アンダースコア）、単語間は `/` で区切ります。
 
-### 🔄 フォーマット変換 — `/convert`
+</details>
+
+<details>
+<summary><b>フォーマット変換</b> — <code>/convert</code></summary>
 
 ```bash
 curl --data-binary @data.json clilap.org/convert/json/yaml
@@ -536,21 +714,27 @@ curl --data-binary @data.ini  clilap.org/convert/ini/json
 
 対応フォーマット: `json` `yaml` `toml` `ini` `csv`。改行・インデントが壊れるため `-d` でなく `--data-binary` を使用してください。YAML対応は簡易サブセット（ネスト・リスト・スカラー値のみ）。
 
-### 🌙 月相 — `/moon`
+</details>
+
+<details>
+<summary><b>月相</b> — <code>/moon</code></summary>
 
 ```bash
 curl clilap.org/moon              # 今日の月相
 curl clilap.org/moon/2026-01-01   # 指定日の月相
 ```
 
-### 🌅 日の出・日の入り — `/sunrise`
+</details>
+
+<details>
+<summary><b>日の出・日の入り</b> — <code>/sunrise</code></summary>
 
 ```bash
 curl clilap.org/sunrise/Tokyo
 curl clilap.org/sunrise           # IPアドレスから自動判定
 ```
 
----
+</details>
 
 ## 共通オプション
 
@@ -560,8 +744,6 @@ curl clilap.org/sunrise           # IPアドレスから自動判定
 | `?en`     | 英語表示 |
 
 `clilap` クライアントでは `--ja` / `--en` を使います。
-
----
 
 ## データソース
 
@@ -579,11 +761,9 @@ curl clilap.org/sunrise           # IPアドレスから自動判定
 - .gitignoreテンプレート: [github/gitignore](https://github.com/github/gitignore)
 - ライセンステキスト: [GitHub Licenses API](https://docs.github.com/en/rest/licenses)
 
----
-
 ## 作者
 
-**Lapius7** — [github.com/Lapius7](https://github.com/Lapius7)
+**Lapius7**（[github.com/Lapius7](https://github.com/Lapius7)）
 
 ## ライセンス
 
