@@ -615,7 +615,7 @@ curl dep.clilap.org/ab12cd/licenses   # ライセンス検査
 <details>
 <summary><b>リアルタイムログ共有</b> — <code>/log</code></summary>
 
-コマンド出力やログファイルをリアルタイムでURL共有します。ANSI色はそのまま保持されます。2段階方式 — 先にアップロード用トークンを取得し、そこへストリームします（go run等、永久に終了しないプロセスでも確実にURLが手に入ります）:
+コマンド出力やログファイルをリアルタイムでURL共有します。ANSI色はそのまま保持されます。2段階方式で、先にアップロード用トークンを取得し、そこへストリームします（go run等、永久に終了しないプロセスでも確実にURLが手に入ります）。
 
 ```bash
 RES=$(curl -s clilap.org/log/new)
@@ -763,7 +763,7 @@ curl clilap.org/sunrise           # IPアドレスから自動判定
 
 ## 作者
 
-**Lapius7** — [github.com/Lapius7](https://github.com/Lapius7)
+**Lapius7**（[github.com/Lapius7](https://github.com/Lapius7)）
 
 ## ライセンス
 
