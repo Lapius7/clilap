@@ -1,29 +1,31 @@
 <div align="center">
-<pre>
-        __ _ _            
-  _____/ /(_) /___ _____  
- / ___/ / / / / __ `/ __ \ 
-/ /__/ / / / / /_/ / /_/ / 
-\___/_/_/_/_/\__,_/ .___/  
-                 /_/       
-</pre>
+
+<p align="center">
+  <img src="docs/images/banner.png" alt="Clilap" width="100%">
+</p>
+
+<p align="center"><b>English</b> | <a href="README.ja.md">日本語</a></p>
+
+<h1 align="center">Clilap</h1>
+
+<h3 align="center">Developer tools you can use with just curl.</h3>
+
+<p align="center">No-install developer tools reached through <code>curl clilap.org</code>. Weather, cheat sheets, GitHub info, DNS lookup, hashing and more, straight from your terminal.</p>
+
+<p align="center">
+  <a href="https://github.com/Lapius7/clilap/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Lapius7/clilap?label=release&style=flat-square&color=e8833a&logo=github"></a>
+  <a href="https://www.npmjs.com/package/@lapius/clilap"><img alt="npm" src="https://img.shields.io/npm/v/@lapius/clilap?style=flat-square&color=cb3837&logo=npm"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/Lapius7/clilap?style=flat-square&color=97ca00"></a>
+  <a href="https://clilap.org"><img alt="curl clilap.org" src="https://img.shields.io/badge/try%20it-curl%20clilap.org-4ec9b0?style=flat-square"></a>
+  <a href="https://github.com/Lapius7/clilap/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=e3b341&logo=github"></a>
+  <a href="https://github.com/Lapius7/clilap/commits/master"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Lapius7/clilap?label=last%20commit&style=flat-square&color=2f81f7"></a>
+</p>
+
+<p align="center"><a href="#install">Install</a> · <a href="#services">Services</a> · <a href="#common-options">Common Options</a> · <a href="#data-sources">Data Sources</a></p>
+
 </div>
 
-[![Stars](https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=yellow)](https://github.com/Lapius7/clilap/stargazers)
-[![Forks](https://img.shields.io/github/forks/Lapius7/clilap?style=flat-square&color=blue)](https://github.com/Lapius7/clilap/network/members)
-[![Issues](https://img.shields.io/github/issues/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/issues)
-[![Last Commit](https://img.shields.io/github/last-commit/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap/commits)
-[![Repo Size](https://img.shields.io/github/repo-size/Lapius7/clilap?style=flat-square)](https://github.com/Lapius7/clilap)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![Node.js](https://img.shields.io/badge/node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![curl](https://img.shields.io/badge/try%20it-curl%20clilap.org-4ec9b0?style=flat-square)](https://clilap.org)
-
-No-install developer tools accessible via `curl`. Weather forecasts, cheat sheets, GitHub info, DNS lookup, hashing, and more — all from your terminal.
-
-```
-curl clilap.org
-```
+---
 
 ## Install
 
@@ -47,7 +49,7 @@ This installs the `clilap` command (Node.js 18+). Every service below works the 
 | `echo hello \| curl -d @- clilap.org/hash/sha256` | `echo hello \| clilap hash sha256` |
 | `curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff` | `clilap diff old.txt new.txt` |
 
-Options:
+Options are listed below.
 
 | Option | Effect |
 |---|---|
@@ -65,11 +67,14 @@ Just use `curl` — all examples below are written with `curl`.
 
 [日本語 README](README.ja.md)
 
----
-
 ## Services
 
-### 🌤 Weather — `/weather`
+> [!NOTE]
+> Service behavior below is carried over from the previous README. Each service was not re-run against clilap.org for this rewrite (unverified).
+
+<details>
+<summary><b>Weather</b> — <code>/weather</code></summary>
+
 Real-time weather forecast using [Open-Meteo](https://open-meteo.com/) and [Nominatim](https://nominatim.org/).
 
 ```bash
@@ -79,7 +84,11 @@ curl clilap.org/weather/東京都/新宿区  # Prefecture / ward
 curl clilap.org/weather/Tokyo?en     # English output
 ```
 
-### 📖 Cheat Sheets — `/cheat`
+</details>
+
+<details>
+<summary><b>Cheat Sheets</b> — <code>/cheat</code></summary>
+
 Command reference powered by [tldr-pages](https://github.com/tldr-pages/tldr).
 
 ```bash
@@ -90,7 +99,11 @@ curl clilap.org/cheat/git?ja         # Japanese (default)
 curl clilap.org/cheat/git?en         # English
 ```
 
-### 🐙 GitHub — `/github`
+</details>
+
+<details>
+<summary><b>GitHub</b> — <code>/github</code></summary>
+
 Explore GitHub repos and users from the terminal.
 
 ```bash
@@ -105,7 +118,11 @@ curl clilap.org/github/curl/curl/prs         # Open pull requests
 curl clilap.org/github/curl/curl/stars       # Star count only
 ```
 
-### 🌐 IP Info — `/ipinfo`
+</details>
+
+<details>
+<summary><b>IP Info</b> — <code>/ipinfo</code></summary>
+
 IP address geolocation and metadata.
 
 ```bash
@@ -113,14 +130,22 @@ curl clilap.org/ipinfo               # Your current IP
 curl clilap.org/ipinfo/8.8.8.8       # Specific IP lookup
 ```
 
-### 🔍 Request Headers — `/headers`
+</details>
+
+<details>
+<summary><b>Request Headers</b> — <code>/headers</code></summary>
+
 Inspect the HTTP headers your client is sending.
 
 ```bash
 curl clilap.org/headers
 ```
 
-### 🔑 UUID Generator — `/uuid`
+</details>
+
+<details>
+<summary><b>UUID Generator</b> — <code>/uuid</code></summary>
+
 Generate random UUIDs (v4).
 
 ```bash
@@ -128,7 +153,11 @@ curl clilap.org/uuid                 # One UUID
 curl clilap.org/uuid/5               # Five UUIDs
 ```
 
-### 🔒 Base64 — `/b64`
+</details>
+
+<details>
+<summary><b>Base64</b> — <code>/b64</code></summary>
+
 Encode and decode Base64.
 
 ```bash
@@ -137,7 +166,11 @@ curl clilap.org/b64/decode/aGVsbG8=
 echo "hello world" | curl -d @- clilap.org/b64/encode
 ```
 
-### #️⃣ Hash — `/hash`
+</details>
+
+<details>
+<summary><b>Hash</b> — <code>/hash</code></summary>
+
 Compute cryptographic hashes.
 
 Supported algorithms: `md5`, `sha1`, `sha256`, `sha512`, `sha3_256`, `sha3_512`
@@ -147,7 +180,11 @@ curl clilap.org/hash/sha256/hello
 echo "hello" | curl -d @- clilap.org/hash/sha256
 ```
 
-### 🕐 Epoch — `/epoch`
+</details>
+
+<details>
+<summary><b>Epoch</b> — <code>/epoch</code></summary>
+
 Convert between Unix timestamps and human-readable dates.
 
 ```bash
@@ -157,7 +194,11 @@ curl clilap.org/epoch/2024-01-01     # Date → Unix timestamp
 curl clilap.org/epoch/2024-01-01T12:00:00
 ```
 
-### 🌍 DNS Lookup — `/dns`
+</details>
+
+<details>
+<summary><b>DNS Lookup</b> — <code>/dns</code></summary>
+
 Query DNS records for any domain.
 
 Supported types: `A`, `AAAA`, `MX`, `NS`, `TXT`, `CNAME`, `SOA`, `PTR`
@@ -168,14 +209,22 @@ curl clilap.org/dns/google.com/MX    # MX records
 curl clilap.org/dns/github.com/NS
 ```
 
-### 📋 WHOIS — `/whois`
+</details>
+
+<details>
+<summary><b>WHOIS</b> — <code>/whois</code></summary>
+
 Domain registration info.
 
 ```bash
 curl clilap.org/whois/github.com
 ```
 
-### 🎨 Color — `/color`
+</details>
+
+<details>
+<summary><b>Color</b> — <code>/color</code></summary>
+
 Convert and inspect colors.
 
 ```bash
@@ -183,7 +232,11 @@ curl clilap.org/color/ff6b6b         # Hex → RGB, HSL + terminal swatch
 curl clilap.org/color/255,107,107    # RGB input
 ```
 
-### 🔲 QR Code — `/qr`
+</details>
+
+<details>
+<summary><b>QR Code</b> — <code>/qr</code></summary>
+
 Generate QR codes in the terminal.
 
 ```bash
@@ -191,14 +244,21 @@ curl clilap.org/qr/https://example.com
 curl clilap.org/qr/Hello+World
 ```
 
-### 🦜 Parrot — `/parrot`
+</details>
+
+<details>
+<summary><b>Parrot</b> — <code>/parrot</code></summary>
+
 A colorful party parrot animation.
 
 ```bash
 curl clilap.org/parrot
 ```
 
-### 🔐 Password Generator — `/password`
+</details>
+
+<details>
+<summary><b>Password Generator</b> — <code>/password</code></summary>
 
 Cryptographically secure password or passphrase generation.
 
@@ -210,7 +270,10 @@ curl clilap.org/password/phrase       # passphrase
 curl clilap.org/password/phrase/5     # 5-word passphrase
 ```
 
-### 📐 Unit Converter — `/unit`
+</details>
+
+<details>
+<summary><b>Unit Converter</b> — <code>/unit</code></summary>
 
 Convert between units of length, weight, time, data, speed, and temperature.
 
@@ -221,7 +284,10 @@ curl clilap.org/unit/100C/F           # temperature
 curl clilap.org/unit/3600s/h          # time
 ```
 
-### 💱 Exchange Rate — `/rate`
+</details>
+
+<details>
+<summary><b>Exchange Rate</b> — <code>/rate</code></summary>
 
 Real-time forex rates (ECB via Frankfurter) and crypto prices (CoinGecko).
 
@@ -233,7 +299,10 @@ curl clilap.org/rate/BTC              # Bitcoin price
 curl clilap.org/rate/ETH/USD          # ETH → USD
 ```
 
-### 🕐 World Time — `/time`
+</details>
+
+<details>
+<summary><b>World Time</b> — <code>/time</code></summary>
 
 Current time in cities around the world.
 
@@ -245,7 +314,10 @@ curl clilap.org/time/Tokyo/London     # compare two cities
 curl clilap.org/time/America/Chicago  # IANA timezone name
 ```
 
-### 🔒 SSL Certificate — `/ssl`
+</details>
+
+<details>
+<summary><b>SSL Certificate</b> — <code>/ssl</code></summary>
 
 SSL/TLS certificate details including expiry and SANs.
 
@@ -254,7 +326,10 @@ curl clilap.org/ssl/github.com
 curl clilap.org/ssl/lapius7.com
 ```
 
-### 🛡 Security Headers — `/sec`
+</details>
+
+<details>
+<summary><b>Security Headers</b> — <code>/sec</code></summary>
 
 HTTP security header audit with grade (A+ to F).
 
@@ -263,7 +338,10 @@ curl clilap.org/sec/github.com
 curl clilap.org/sec/lapius7.com
 ```
 
-### 🗺 DNS Map — `/dnsmap`
+</details>
+
+<details>
+<summary><b>DNS Map</b> — <code>/dnsmap</code></summary>
 
 Query a domain across 4 resolvers (Cloudflare, Google, Quad9, OpenDNS) simultaneously.
 
@@ -271,7 +349,10 @@ Query a domain across 4 resolvers (Cloudflare, Google, Quad9, OpenDNS) simultane
 curl clilap.org/dnsmap/github.com
 ```
 
-### 🌐 DNS All Records — `/dns/{domain}/all`
+</details>
+
+<details>
+<summary><b>DNS All Records</b> — <code>/dns/{domain}/all</code></summary>
 
 Export all DNS record types (A/AAAA/MX/NS/TXT/CNAME/SOA/CAA/SRV) at once.
 
@@ -280,7 +361,10 @@ curl clilap.org/dns/github.com/all
 curl clilap.org/dns/lapius7.com/all
 ```
 
-### 🔌 Port Check — `/portcheck`
+</details>
+
+<details>
+<summary><b>Port Check</b> — <code>/portcheck</code></summary>
 
 Check if a port is open on a remote host.
 
@@ -289,7 +373,10 @@ curl clilap.org/portcheck/github.com/443
 curl clilap.org/portcheck/example.com/22
 ```
 
-### 🔗 Redirect Chain — `/redirect`
+</details>
+
+<details>
+<summary><b>Redirect Chain</b> — <code>/redirect</code></summary>
 
 Trace all HTTP redirects for a URL.
 
@@ -298,7 +385,10 @@ curl clilap.org/redirect/https://bit.ly/...
 curl clilap.org/redirect/https://t.co/...
 ```
 
-### 📦 Package Info — `/package`
+</details>
+
+<details>
+<summary><b>Package Info</b> — <code>/package</code></summary>
 
 npm and PyPI package metadata.
 
@@ -308,7 +398,10 @@ curl clilap.org/package/npm/@types/node
 curl clilap.org/package/pypi/requests
 ```
 
-### 🎨 ASCII Art — `/ascii`
+</details>
+
+<details>
+<summary><b>ASCII Art</b> — <code>/ascii</code></summary>
 
 Generate ASCII art via figlet.
 
@@ -317,7 +410,10 @@ curl clilap.org/ascii/Hello
 curl "clilap.org/ascii/Hi?font=slant"
 ```
 
-### 🔢 Base Converter — `/base`
+</details>
+
+<details>
+<summary><b>Base Converter</b> — <code>/base</code></summary>
 
 Convert between any base from 2 to 36.
 
@@ -328,7 +424,10 @@ curl clilap.org/base/10/2/255         # decimal → binary
 curl clilap.org/base/10/255?all       # decimal → all bases 2-36
 ```
 
-### 🔗 URL Encode/Decode — `/urlencode` `/urldecode`
+</details>
+
+<details>
+<summary><b>URL Encode/Decode</b> — <code>/urlencode</code> <code>/urldecode</code></summary>
 
 ```bash
 curl clilap.org/urlencode/hello+world
@@ -336,7 +435,10 @@ curl clilap.org/urldecode/hello%20world
 echo "hello world" | curl -d @- clilap.org/urlencode
 ```
 
-### 📅 Calendar — `/cal`
+</details>
+
+<details>
+<summary><b>Calendar</b> — <code>/cal</code></summary>
 
 Terminal calendar with today highlighted.
 
@@ -346,7 +448,10 @@ curl clilap.org/cal/2026              # full year
 curl clilap.org/cal/2026/6            # specific month
 ```
 
-### ⏰ Cron Parser — `/cron`
+</details>
+
+<details>
+<summary><b>⏰ Cron Parser</b> — <code>/cron</code></summary>
 
 Translate cron expressions into human-readable descriptions.
 
@@ -356,7 +461,10 @@ curl clilap.org/cron/@daily
 curl clilap.org/cron/@weekly
 ```
 
-### 🔑 TOTP Generator — `/totp`
+</details>
+
+<details>
+<summary><b>TOTP Generator</b> — <code>/totp</code></summary>
 
 Generate TOTP one-time passwords from a Base32 secret.
 
@@ -364,9 +472,13 @@ Generate TOTP one-time passwords from a Base32 secret.
 curl clilap.org/totp/JBSWY3DPEHPK3PXP
 ```
 
-> ⚠ Do not use with real secrets over HTTP — for testing only.
+> [!WARNING]
+> Do not use with real secrets over HTTP — for testing only.
 
-### 🎲 Mock Data — `/mock`
+</details>
+
+<details>
+<summary><b>Mock Data</b> — <code>/mock</code></summary>
 
 Generate fake JSON user data or Lorem Ipsum text.
 
@@ -377,7 +489,10 @@ curl clilap.org/mock/lorem            # 1 Lorem paragraph
 curl clilap.org/mock/lorem/3          # 3 paragraphs
 ```
 
-### 🚫 .gitignore Generator — `/gitignore`
+</details>
+
+<details>
+<summary><b>.gitignore Generator</b> — <code>/gitignore</code></summary>
 
 Fetch GitHub gitignore templates. Combine multiple languages.
 
@@ -387,7 +502,10 @@ curl clilap.org/gitignore/python
 curl clilap.org/gitignore/node,python,macos,vscode
 ```
 
-### 📜 License Text — `/license`
+</details>
+
+<details>
+<summary><b>License Text</b> — <code>/license</code></summary>
 
 Open source license templates with auto-filled year and holder.
 
@@ -400,7 +518,10 @@ curl clilap.org/license/gpl-3
 
 Supported: `mit` `apache` `gpl-3` `gpl-2` `lgpl` `mpl` `isc` `bsd-2` `bsd-3` `unlicense` `agpl` `cc0`
 
-### {} JSON Formatter — `/json`
+</details>
+
+<details>
+<summary><b>{} JSON Formatter</b> — <code>/json</code></summary>
 
 Format and validate JSON. POST body.
 
@@ -410,7 +531,10 @@ curl -d @data.json clilap.org/json
 curl -d @data.json "clilap.org/json?compact"
 ```
 
-### 📝 Diff — `/diff`
+</details>
+
+<details>
+<summary><b>Diff</b> — <code>/diff</code></summary>
 
 Colored unified diff of two files.
 
@@ -418,7 +542,10 @@ Colored unified diff of two files.
 curl -F "a=@old.txt" -F "b=@new.txt" clilap.org/diff
 ```
 
-### 📄 Markdown Renderer — `/md`
+</details>
+
+<details>
+<summary><b>Markdown Renderer</b> — <code>/md</code></summary>
 
 Render Markdown as ANSI-colored terminal output.
 
@@ -427,7 +554,10 @@ cat README.md | curl -d @- clilap.org/md
 curl -d @README.md clilap.org/md
 ```
 
-### 🔡 Unicode Tools — `/unicode`
+</details>
+
+<details>
+<summary><b>Unicode Tools</b> — <code>/unicode</code></summary>
 
 Character info, text inspection, name search, and fancy text styles.
 
@@ -442,9 +572,10 @@ curl clilap.org/unicode/fancy                 # list all styles
 
 Fancy styles: `bold` `italic` `bolditalic` `script` `boldscript` `gothic` `doublestruck` `sans` `monospace` `circled` `bubble` ...
 
----
+</details>
 
-### 🔍 Regex Tester — `/regex`
+<details>
+<summary><b>Regex Tester</b> — <code>/regex</code></summary>
 
 Test regular expressions using Python's `re` engine. Shows match count, positions, and capture groups.
 
@@ -463,9 +594,10 @@ echo "2024-01-15" | curl -d @- "clilap.org/regex/(\d{4})-(\d{2})-(\d{2})"
 | `?flags=x` | Verbose (whitespace ignored) |
 | `?flags=im` | Combine flags |
 
----
+</details>
 
-### 📦 Dependency Visualizer — `/dep`
+<details>
+<summary><b>Dependency Visualizer</b> — <code>/dep</code></summary>
 
 Upload a `package.json`, get a dependency tree at a shareable URL. Detects circular dependencies, ranks heaviest packages, and audits licenses.
 
@@ -481,7 +613,10 @@ curl dep.clilap.org/ab12cd/licenses   # license audit
 
 Also viewable in a browser: `https://dep.clilap.org/ab12cd`. Stored indefinitely.
 
-### 📡 Realtime Log Sharing — `/log`
+</details>
+
+<details>
+<summary><b>Realtime Log Sharing</b> — <code>/log</code></summary>
 
 Stream any command output or log file to a shareable URL. ANSI colors are preserved. Two-step flow — get an upload token first, then stream to it (works even for processes that never exit, like long-running servers):
 
@@ -499,9 +634,10 @@ curl "log.clilap.org/abc123?grep=ERROR"     # filter by regex
 
 Open `https://log.clilap.org/abc123` in a browser for a realtime live-updating view (WebSocket-backed, ANSI rendered as color).
 
----
+</details>
 
-### 🌐 CIDR Calculator — `/cidr`
+<details>
+<summary><b>CIDR Calculator</b> — <code>/cidr</code></summary>
 
 ```bash
 curl clilap.org/cidr/192.168.1.0/24
@@ -509,7 +645,10 @@ curl clilap.org/cidr/10.0.0.0/8
 curl clilap.org/cidr/2001:db8::/32
 ```
 
-### 🌍 ASN Lookup — `/asn`
+</details>
+
+<details>
+<summary><b>ASN Lookup</b> — <code>/asn</code></summary>
 
 ```bash
 curl clilap.org/asn/8.8.8.8
@@ -518,29 +657,42 @@ curl clilap.org/asn/1.1.1.1
 
 Uses Team Cymru's DNS-based lookup. IPv4 only.
 
-### 🤖 robots.txt Inspector — `/robots`
+</details>
+
+<details>
+<summary><b>robots.txt Inspector</b> — <code>/robots</code></summary>
 
 ```bash
 curl clilap.org/robots/github.com
 ```
 
-### 🕵 User-Agent Parser — `/useragent`
+</details>
+
+<details>
+<summary><b>User-Agent Parser</b> — <code>/useragent</code></summary>
 
 ```bash
 curl clilap.org/useragent                          # parse your own UA
 curl -A "Mozilla/5.0 ..." clilap.org/useragent     # parse a given UA
 ```
 
-### 🔐 JWT Decoder — `/jwt`
+</details>
+
+<details>
+<summary><b>JWT Decoder</b> — <code>/jwt</code></summary>
 
 ```bash
 curl clilap.org/jwt/{token}
 echo "{token}" | curl -d @- clilap.org/jwt
 ```
 
-> ⚠ Signature is not verified. Don't trust untrusted token contents blindly.
+> [!WARNING]
+> Signature is not verified. Don't trust untrusted token contents blindly.
 
-### 📡 Morse Code — `/morse`
+</details>
+
+<details>
+<summary><b>Morse Code</b> — <code>/morse</code></summary>
 
 ```bash
 curl clilap.org/morse/encode/SOS
@@ -550,7 +702,10 @@ echo "Hello" | curl -d @- clilap.org/morse/encode
 
 Use `_` to separate letters and `/` to separate words when decoding.
 
-### 🔄 Format Converter — `/convert`
+</details>
+
+<details>
+<summary><b>Format Converter</b> — <code>/convert</code></summary>
 
 ```bash
 curl --data-binary @data.json clilap.org/convert/json/yaml
@@ -562,21 +717,27 @@ curl --data-binary @data.ini  clilap.org/convert/ini/json
 
 Supported formats: `json` `yaml` `toml` `ini` `csv`. Use `--data-binary` (not `-d`) to preserve newlines/indentation. YAML support is a minimal subset (nesting, lists, scalars only).
 
-### 🌙 Moon Phase — `/moon`
+</details>
+
+<details>
+<summary><b>Moon Phase</b> — <code>/moon</code></summary>
 
 ```bash
 curl clilap.org/moon                # today's phase
 curl clilap.org/moon/2026-01-01     # phase on a given date
 ```
 
-### 🌅 Sunrise/Sunset — `/sunrise`
+</details>
+
+<details>
+<summary><b>Sunrise/Sunset</b> — <code>/sunrise</code></summary>
 
 ```bash
 curl clilap.org/sunrise/Tokyo
 curl clilap.org/sunrise             # auto-detect from IP
 ```
 
----
+</details>
 
 ## Common Options
 
@@ -586,8 +747,6 @@ curl clilap.org/sunrise             # auto-detect from IP
 | `?en`  | English output  |
 
 With the `clilap` client, use `--ja` / `--en`.
-
----
 
 ## Data Sources
 
@@ -604,8 +763,6 @@ With the `clilap` client, use `--ja` / `--en`.
 - PyPI packages: [pypi.org](https://pypi.org/)
 - .gitignore templates: [github/gitignore](https://github.com/github/gitignore)
 - License text: [GitHub Licenses API](https://docs.github.com/en/rest/licenses)
-
----
 
 ## Author
 
