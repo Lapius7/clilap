@@ -9,12 +9,12 @@
 <p align="center">インストール不要で <code>curl clilap.org</code> から使える開発者向けツール集。天気予報・コマンドチートシート・GitHub 情報・DNS・ハッシュ計算などを、ターミナルから直接使えます。</p>
 
 <p align="center">
-  <a href="https://github.com/Lapius7/clilap/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Lapius7/clilap?label=release&style=flat-square&color=e8833a&logo=github"></a>
+  <a href="https://github.com/Lapius7/clilap.org/releases"><img alt="Release" src="https://img.shields.io/github/v/release/Lapius7/clilap.org?label=release&style=flat-square&color=e8833a&logo=github"></a>
   <a href="https://www.npmjs.com/package/@lapius/clilap"><img alt="npm" src="https://img.shields.io/npm/v/@lapius/clilap?style=flat-square&color=cb3837&logo=npm"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/Lapius7/clilap?style=flat-square&color=97ca00"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/Lapius7/clilap.org?style=flat-square&color=97ca00"></a>
   <a href="https://clilap.org"><img alt="curl clilap.org" src="https://img.shields.io/badge/try%20it-curl%20clilap.org-4ec9b0?style=flat-square"></a>
-  <a href="https://github.com/Lapius7/clilap/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/Lapius7/clilap?style=flat-square&color=e3b341&logo=github"></a>
-  <a href="https://github.com/Lapius7/clilap/commits/master"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Lapius7/clilap?label=last%20commit&style=flat-square&color=2f81f7"></a>
+  <a href="https://github.com/Lapius7/clilap.org/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/Lapius7/clilap.org?style=flat-square&color=e3b341&logo=github"></a>
+  <a href="https://github.com/Lapius7/clilap.org/commits/master"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Lapius7/clilap.org?label=last%20commit&style=flat-square&color=2f81f7"></a>
 </p>
 
 <p align="center"><a href="#インストール">インストール</a> · <a href="#サービス一覧">サービス一覧</a> · <a href="#共通オプション">共通オプション</a> · <a href="#データソース">データソース</a></p>

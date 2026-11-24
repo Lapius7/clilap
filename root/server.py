@@ -186,7 +186,7 @@ def render_index(nc):
         '',
         f'  {c(DC, "共通オプション:")}  {c(DC, "?ja  ?en")}',
         div,
-        f'  {c(C, "github.com/Lapius7/clilap")}  {c(D, "by")} {c(C, "@Lapius7")}',
+        f'  {c(C, "github.com/Lapius7/clilap.org")}  {c(D, "by")} {c(C, "@Lapius7")}',
         SEP,
     ]
     return '\n'.join(str(l) for l in lines) + '\n'
@@ -777,7 +777,7 @@ def render_help(nc):
         SEP,
         f'  {c(DC, "共通オプション:")}  {c(DC, "?ja  ?en")}',
         div,
-        f'  {c(C, "github.com/Lapius7/clilap")}  {c(D, "by")} {c(C, "@Lapius7")}',
+        f'  {c(C, "github.com/Lapius7/clilap.org")}  {c(D, "by")} {c(C, "@Lapius7")}',
         SEP,
     ]
     return '\n'.join(str(l) for l in lines) + '\n'
